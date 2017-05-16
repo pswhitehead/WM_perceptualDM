@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="NEXT.css" type="text/css" charset="utf-8">
+  <script type="text/javascript" src="jquery-3.1.1.js"></script>
+  <script type="text/javascript" src="wordlist.js"></script>
+  <script type="text/javascript">
+
+  /*function gup(name, tmpURL)
+  {
+  var regexS = "[\\?&]"+name+"=([^&#]*)";
+  var regex = new RegExp(regexS);
+  var results = regex.exec(tmpURL);
+  if (results == null)
+  {
+  return "";
+}
+else
+{
+return results[1];
+}
+}*/
+
+$(document).ready(function(){
+
+  var c = document.getElementById("myCanvas");
+  var ctx = c.getContext("2d");
+
+  //Experiment Parameters
+  var GOtrial = [3,3,3,3,3,3,3,3,3,3,3,3,
+3,3,3,3,3,3,3,3,3,3,3,3,
+3,3,3,3,3,3,3,3,3,3,3,3,
+3,3,3,3,3,3,3,3,3,3,3,3,
+3,3,3,3,3,3,3,3,3,3,3,3,
+3,3,3,3,3,3,3,3,3,3,3,3]; //length of GO trial sequence
+    var ITIinterval = 500; //Inter-trial-interval in milliseconds
+    var instructioninterval = 6000;
+    var firstinstructioninterval = 30000;
+    var secondinstructioninterval = 20000;
+    var highlow = [
+      [[0],[0]],[[0],[0]],[[0],[0]],[[0],[0]],
+      [[0],[0]],[[0],[0]],[[0],[0]],[[0],[0]],
+      [[0],[0]],[[0],[0]],[[0],[0]],[[0],[0]],
+
+      [[1],[0]],[[1],[0]],[[1],[0]],[[1],[3]],
+      [[1],[1]],[[1],[1]],[[1],[1]],[[1],[3]],
+      [[1],[2]],[[1],[2]],[[1],[2]],[[1],[3]],
+
+      [[2],[0]],[[2],[3]],[[2],[0]],[[2],[3]],
+      [[2],[1]],[[2],[4]],[[2],[1]],[[2],[4]],
+      [[2],[2]],[[2],[5]],[[2],[2]],[[2],[5]],
+
+      [[3],[0]],[[3],[0]],[[3],[1]],[[3],[1]],
+      [[3],[0]],[[3],[0]],[[3],[1]],[[3],[1]],
+      [[3],[0]],[[3],[0]],[[3],[1]],[[3],[1]],
+
+      [[4],[0]],[[4],[0]],[[4],[1]],[[4],[1]],
+      [[4],[0]],[[4],[0]],[[4],[1]],[[4],[1]],
+      [[4],[0]],[[4],[0]],[[4],[1]],[[4],[1]],
+
+      [[5],[0]],[[5],[0]],[[5],[1]],[[5],[1]],
+      [[5],[0]],[[5],[0]],[[5],[1]],[[5],[1]],
+      [[5],[0]],[[5],[0]],[[5],[1]],[[5],[1]],
+    ]
+
+    var random = [];
+    for (var g=0;g<72;g++) {
+      random.push(g);
+    }
+    shuffle(random)
+
+    var cuewordchoice = [];
+    for (var cwc=0;cwc<60;cwc++) {
+      cuewordchoice.push((2*cwc)+(2+cwc));
+    }
+    shuffle(cuewordchoice)
+
+    //0=compatible, 1=incompatible^1, 2=incompatible^2, 3,4,5=neutral, 6=catch
+    var trialtype = [
+      [[6]],
+    [[0],[1],[2],[3]],
+    [[0,1],[0,2],[0,3],[0,3],[1,3],[2,3]],
+    [[0,1,3],[0,2,3]],
+    [[0,1,3,4],[0,2,3,4]],
+    [[0,1,3,4,5],[0,2,3,4,5]]
+  ];
+    shuffle(trialtype[5][0])
+    shuffle(trialtype[5][1])
+
+    shuffle(trialtype[4][0])
+    shuffle(trialtype[4][1])
+
+    shuffle(trialtype[3][0])
+    shuffle(trialtype[3][1])
+
+    shuffle(trialtype[2][0])
+    shuffle(trialtype[2][1])
+    shuffle(trialtype[2][2])
+    shuffle(trialtype[2][3])
+    shuffle(trialtype[2][4])
+    shuffle(trialtype[2][5])
+
+    var GOtrialtype = [0,1,2];
+    var color = ["red", "blue"]
+    var cueword = words
+    var neutral = neutralwords
+    shuffle(neutralwords)
+
+    //Initialize and reset counters
+    var time = 0;
+    var b = 0;
+    var nt = 0;
+    var gt = 0;
+    var i = 0;
+    var j = 0;
+    var w = 0; //denotes the word/letter stimuli
+    var wn = 0;
+    var wx = 1;
+    var l = 0;
+    var instructions = 0;
+    var count = 0;
+    var acctotalcount = 0;
+    var acccount = 0;
+    var jokes = 0;
+
+    //logfile
+    var data=[['']];
+    var runStart;
+    var logCounter = 0;
+    var onset;
+    var d1;
+    var checkResponse = false;
+    var timeoutHandle = null;
+
+    function blockinstruction(){
+      type = 2;
+      var instructions = 0;
+      $("#startButton").hide();
+      if (count == 0){
+        //instructions++;
+        ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
+        ctx.font="25px Arial";
+        ctx.fillStyle="black";
+        ctx.textBaseline="middle";
+        ctx.textAlign="center";
+        ctx.fillText("Please answer as quickly and accurately as possible.", (myCanvas.width/2), (myCanvas.height/2)-300);
+        ctx.fillText("You have 30 seconds to read these instructions.", (myCanvas.width/2), (myCanvas.height/2)-240);
+        ctx.fillText("Pressing any button will restart the 30 second timer.", (myCanvas.width/2), (myCanvas.height/2)-190);
+        ctx.fillText("When the words appear in                                   press D", (myCanvas.width/2)-50, (myCanvas.height/2)+150)
+        ctx.fillText("When the words appear in                                  , follow the instructions below:", (myCanvas.width/2), (myCanvas.height/2)-100);
+        ctx.font="bold 25px Arial";
+        if ([highlow[random[l]][0][0]] == 0){
+          ctx.fillText("If you see the word: '" +neutral[wn+2][0]+ "' then press D", (myCanvas.width/2), (myCanvas.height/2)-50);
+          ctx.fillText("If you see the word: '" +neutral[wn+1][0]+ "' then press G", (myCanvas.width/2), (myCanvas.height/2));
+          ctx.fillText("If you see the word: '"+neutral[wn][0]+ "' then press J", (myCanvas.width/2), (myCanvas.height/2)+50);
+        }
+        else {
+          ctx.fillText("If you see the word: '" +cueword[cuewordchoice[w]][0]+ "' then press D", (myCanvas.width/2), (myCanvas.height/2)-50);
+          ctx.fillText("If you see the word: '" +cueword[cuewordchoice[w]-1][0]+ "' then press G", (myCanvas.width/2), (myCanvas.height/2));
+          ctx.fillText("If you see the word: '"+cueword[cuewordchoice[w]-2][0]+ "' then press J", (myCanvas.width/2), (myCanvas.height/2)+50);
+        }
+
+        ctx.font="bold 50px Arial";
+        ctx.fillStyle=color[j];
+        ctx.fillText("this color", (myCanvas.width/2)+54, (myCanvas.height/2)+150);
+
+        ctx.fillStyle=color[j+1];
+        ctx.fillText("this color", (myCanvas.width/2)-15, (myCanvas.height/2)-100);
+
+      }
+      else if (count == 1){
+        //instructions++;
+        ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
+        ctx.font="25px Arial";
+        ctx.fillStyle="black";
+        ctx.textBaseline="middle";
+        ctx.textAlign="center";
+        ctx.fillText("Please answer as quickly and accurately as possible.", (myCanvas.width/2), (myCanvas.height/2)-300);
+        ctx.fillText("You have 20 seconds to read these instructions.", (myCanvas.width/2), (myCanvas.height/2)-240);
+        ctx.fillText("Instruction screens after this will be shorter.", (myCanvas.width/2), (myCanvas.height/2)-190);
+        ctx.fillText("When the words appear in                                   press D", (myCanvas.width/2)-50, (myCanvas.height/2)+150)
+        ctx.fillText("When the words appear in                                  , follow the instructions below:", (myCanvas.width/2), (myCanvas.height/2)-100);
+        ctx.font="bold 25px Arial";
+        if ([highlow[random[l]][0][0]] == 0){
+          ctx.fillText("If you see the word: '" +neutral[wn+2][0]+ "' then press D", (myCanvas.width/2), (myCanvas.height/2)-50);
+          ctx.fillText("If you see the word: '" +neutral[wn+1][0]+ "' then press G", (myCanvas.width/2), (myCanvas.height/2));
+          ctx.fillText("If you see the word: '"+neutral[wn][0]+ "' then press J", (myCanvas.width/2), (myCanvas.height/2)+50);
+        }
+        else {
+          ctx.fillText("If you see the word: '" +cueword[cuewordchoice[w]][0]+ "' then press D", (myCanvas.width/2), (myCanvas.height/2)-50);
+          ctx.fillText("If you see the word: '" +cueword[cuewordchoice[w]-1][0]+ "' then press G", (myCanvas.width/2), (myCanvas.height/2));
+          ctx.fillText("If you see the word: '"+cueword[cuewordchoice[w]-2][0]+ "' then press J", (myCanvas.width/2), (myCanvas.height/2)+50);
+        }
+
+        ctx.font="bold 50px Arial";
+        ctx.fillStyle=color[j];
+        ctx.fillText("this color", (myCanvas.width/2)+54, (myCanvas.height/2)+150);
+
+        ctx.fillStyle=color[j+1];
+        ctx.fillText("this color", (myCanvas.width/2)-15, (myCanvas.height/2)-100);
+
+      }
+      else {
+        //instructions++;
+        ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
+        ctx.font="25px Arial";
+        ctx.fillStyle="black";
+        ctx.textBaseline="middle";
+        ctx.textAlign="left";
+        ctx.fillText("Your accuracy is currently: "+Math.round((acccount/acctotalcount)*100)+" %", (myCanvas.width/2)-300, (myCanvas.height/2)-300);
+        ctx.fillText("If                                     press D", (myCanvas.width/2)-300, (myCanvas.height/2)+150)
+        ctx.font="bold 25px Arial";
+        ctx.fillText("If                                          press D", (myCanvas.width/2)-300, (myCanvas.height/2)-50);
+        ctx.fillText("If                                          press G", (myCanvas.width/2)-300, (myCanvas.height/2));
+        ctx.fillText("If                                          press J", (myCanvas.width/2)-300, (myCanvas.height/2)+50);
+
+        ctx.font="bold 50px Arial";
+        ctx.fillStyle=color[j];
+        ctx.fillText("this color", (myCanvas.width/2)-260, (myCanvas.height/2)+150);
+        ctx.fillStyle=color[j+1];
+
+        if ([highlow[random[l]][0][0]] == 0){
+          ctx.fillText(neutral[wn+2][0], (myCanvas.width/2)-280, (myCanvas.height/2)-50);
+          ctx.fillText(neutral[wn+1][0], (myCanvas.width/2)-280, (myCanvas.height/2));
+          ctx.fillText(neutral[wn][0], (myCanvas.width/2)-280, (myCanvas.height/2)+50);
+        }
+        else {
+          ctx.fillText(cueword[cuewordchoice[w]][0], (myCanvas.width/2)-280, (myCanvas.height/2)-50);
+          ctx.fillText(cueword[cuewordchoice[w]-1][0], (myCanvas.width/2)-280, (myCanvas.height/2));
+          ctx.fillText(cueword[cuewordchoice[w]-2][0], (myCanvas.width/2)-280, (myCanvas.height/2)+50);
+        }
+
+
+      }
+      if (count < 1){
+        timeout = setTimeout(showITI500,firstinstructioninterval)
+      }
+      else if (count < 2){
+        timeout = setTimeout(showITI500,secondinstructioninterval)
+      }
+      else {
+        timeout = setTimeout(showITI500,instructioninterval)
+      }
+    }
+
+    function countDown(time)
+    {
+      type = 3;
+      if (time > 0)
+      {
+        $("#startButton").hide();
+        ctx.fillStyle = "black";
+        ctx.font="60px Arial";
+        ctx.clearRect(0,0, myCanvas.width, myCanvas.height);
+        ctx.fillText(""+time, myCanvas.width/2, myCanvas.height/2);
+        timeoutcountdown = setTimeout(function(){countDown(time-1)},1000);
+      }
+      else
+      {
+        runTrial();
+      }
+    };
+
+    function runTrial(){
+      if (b < random.length){
+        if (instructions < 1){
+          //shuffle(GOtrialtype);
+          blockinstruction();
+        }
+        //else if (nt < 0 && highlow[random[l]][0][0] == 0){acctotalcount++; runNEXT();}
+        //else if (nt < 1 && NEXTtrial[l] == 1){runNEXT();}
+        else if (nt < highlow[random[l]][0][0]){acctotalcount++; runNEXT();}
+        else if (gt < GOtrial[l]) {acctotalcount++;
+          if (gt < 1){i=0; shuffle(GOtrialtype)}
+          runGO();
+        }
+        else {
+          if (highlow[random[l]][0][0] == 0){wn++; wn++; wn++;}
+
+          else if (highlow[random[l]][0][0] == 1 && highlow[random[l]][1][0] == 0){w++;}
+          else if (highlow[random[l]][0][0] == 1 && highlow[random[l]][1][0] == 1){w++;}
+          else if (highlow[random[l]][0][0] == 1 && highlow[random[l]][1][0] == 2){w++;}
+          else if (highlow[random[l]][0][0] == 1 && highlow[random[l]][1][0] == 3){w++; wn++;}
+
+          else if (highlow[random[l]][0][0] == 2 && highlow[random[l]][1][0] < 1){w++;}
+          else if (highlow[random[l]][0][0] == 2 && highlow[random[l]][1][0] > 1){w++; wn++;}
+
+          else if (highlow[random[l]][0][0] == 3){w++; wn++;}
+          else if (highlow[random[l]][0][0] == 4){w++; wn++; wn++;}
+          else if (highlow[random[l]][0][0] == 5){w++; wn++; wn++; wn++;}
+
+          shuffle(trialtype[5][0])
+          shuffle(trialtype[5][1])
+          shuffle(trialtype[4][0])
+          shuffle(trialtype[4][1])
+          shuffle(trialtype[3][0])
+          shuffle(trialtype[3][1])
+          shuffle(trialtype[2][0])
+          shuffle(trialtype[2][1])
+          shuffle(trialtype[2][2])
+          shuffle(trialtype[2][3])
+          shuffle(trialtype[2][4])
+          shuffle(trialtype[2][5])
+
+          i = 0; nt =0; gt = 0; instructions = 0;
+          b++; j++; j++; l++; count++;
+          if (j > color.length-1){j=0;}
+          runTrial();}
+        }
+        else {
+          {
+            //alert(data.join(";"));
+            $("#info").css("color","white");
+            //$("#info").show();
+            $("#info").text(data.join(";"));
+            //$("#mturk_form").show();
+            $("#RTs", opener.window.document).val(data.join(";"));
+            opener.updateMainMenu(3);
+            JavaScript:window.close();
+          }
+        }
+      };
+
+      function showITI500(){
+        type = 4;
+        $("#startButton").hide();
+        ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
+        ctx.font="bold 50px Arial";
+        ctx.fillStyle="black";
+        ctx.fillText("*",(myCanvas.width)/2,(myCanvas.height)/2);
+        instructions++;
+        if (count < 2 && i == 0){
+          countDown(5)
+        }
+        else if (count >= 2 && i == 0){
+          countDown(3)
+        }
+        else {
+          timeoutITI = setTimeout(runTrial,ITIinterval);
+        }
+      };
+
+      function shuffle(array) {
+        var currentIndex = array.length, temporaryValue, randomIndex;
+
+        // While there remain elements to shuffle...
+        while (0 !== currentIndex) {
+
+          // Pick a remaining element...
+          randomIndex = Math.floor(Math.random() * currentIndex);
+          currentIndex -= 1;
+
+          // And swap it with the current element.
+          temporaryValue = array[currentIndex];
+          array[currentIndex] = array[randomIndex];
+          array[randomIndex] = temporaryValue;
+        }
+
+        return array;
+      }
+
+
+      $("body").keypress(function(event){
+        //clearTimeout();
+        key = String.fromCharCode(event.which);
+        //creates more data
+        d1 = new Date();
+        Ronset = d1.getTime()-runStart;
+        respTime = Ronset-onset;
+        acc = 0;
+
+        if (type == 0){
+          if (key == "d" || key == "D"){
+            acc = 1; acccount++;}
+          data[logCounter] = ["NR:", Ronset, key, respTime, acc, b, trialtype[highlow[random[l]][0][0]][highlow[random[l]][1][0]][i], highlow[random[l]][1][0], highlow[random[l]][0][0], nt];
+          logCounter++; nt++; i++; showITI500();
+        }
+        else if (type == 1){
+          if (GOtrialtype[i-1] == 2 && key == "j" || GOtrialtype[i-1] == 2 && key == "J"){acc = 1; acccount++;}
+          else if (GOtrialtype[i-1] == 1 && key == "g" || GOtrialtype[i-1] == 1 && key == "G"){acc = 1; acccount++;}
+          else if (GOtrialtype[i-1] == 0 && key == "d" || GOtrialtype[i-1] == 0 && key == "D"){acc = 1; acccount++;}
+
+          data[logCounter] = ["GR:", Ronset, key, respTime, acc, b, GOtrialtype[i-1], highlow[random[l]][1][0], highlow[random[l]][0][0], gt];
+          logCounter++; gt++; showITI500();
+        }
+        else if (type == 2){instructions++; clearTimeout(timeout); blockinstruction();}
+        else if (type == 3){jokes++; clearTimeout(timeoutcountdown);
+          if (count < 2 && i == 0){
+            countDown(5)
+          }
+          else if (count >= 2 && i == 0){
+            countDown(3)
+          }}
+        else if (type == 4){jokes++; clearTimeout(timeoutITI); showITI500();}
+        else {jokes++;}
+
+      });
+      $("#info").hide();
+      $("#mturk_form").hide();
+      d1 = new Date();
+      runStart = d1.getTime();
+      runTrial();
+
+    });
+
+    </script>
+  </head>
+  <body>
+    <table>
+      <tr>
+        <td>
+          <canvas id="myCanvas" width="900" height="900"> </canvas>
+          <div style="text-align:center; align:center;">
+          </div>
+          <div style="text-align:center;">
+            <button id="startButton">Start</button>
+          </div>
+          <form id="mturk_form" method="POST" action="http://152.3.33.45/AMTSubmit/dataHandler.php">
+            <form id="mturk_form" method="POST" action="https://workersandbox.mturk.com/mturk/externalSubmit">
+              <input type="hidden" id="assignmentId" name="assignmentId" value="">
+              <input type="hidden" id="workerId" name="workerId" value="">
+              <input type="hidden" id="hitId" name="hitId" value="">
+              <input type="hidden" id="RTs" name="RTs" value="">
+              <input type="hidden" id="ExpName" name="ExpName" value="NEXT">
+              <p style="font-family: Arial; color: black; font-size:24px">Click button to submit</p>
+              <input id="submitButton" type="submit" name="Finish" value="Submit">
+            </td>
+          </tr>
+        </table>
+      </body>
+      </html>
