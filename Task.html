@@ -3,18 +3,50 @@
 <head>
   <link rel="stylesheet" href="Task.css" type="text/css" charset="utf-8">
   <script type="text/javascript" src="jquery-3.1.1.js"></script>
+  <script type="text/javascript" src="math.js"></script>
+
   <script type="text/javascript">
 
 $(document).ready(function(){
 
   var c = document.getElementById("myCanvas");
   var ctx = c.getContext("2d");
+  ctx.rotate(45 * Math.PI / 180);
+  ctx.translate(Math.sqrt(2*(450*450)),0);
 
   //Experiment Parameters
-    var type = 0;
+    type = 0;
+    jokes = 0;
     var ITIinterval
     var trialcount = 0;
     var stimscreencount = 0;
+    var i=0;
+    var area = 6000;
+    var WMinterval = 500;
+    var ITIinterval
+
+    //var random = [0,1,2,3,4,5,6];
+
+    random = [];
+    for (var g=0;g<16;g++) {
+      random.push(g);
+    }
+    shuffle(random)
+
+
+    var trialmatrix = [[-1,0,0],[-1,0,0],[-1,0,1],[-1,0,1],
+                      [1,0,0],[1,0,0],[1,0,1],[1,0,1],
+                      [-1,1,0],[-1,1,0],[-1,1,1],[-1,1,1],
+                      [1,1,0],[1,1,0],[1,1,1],[1,1,1]]
+
+    //logfile
+    var data=[['']];
+    var runStart;
+    var logCounter = 0;
+    var onset;
+    var d1;
+    var checkResponse = false;
+    var timeoutHandle = null;
 
   //Gaussian distribution function
     var gmean
@@ -41,7 +73,7 @@ $(document).ready(function(){
                 use_last = true;
            }
 
-           var retval = mean + stdev * y1;
+           var retval = gmean + gstdev * y1;
            if(retval > 0)
                return retval;
            return -retval;
@@ -72,11 +104,11 @@ $(document).ready(function(){
   //mean color parameters for compatible trials
     var mcref = (255/2);
     var mccategory = 255;
-    var mccondition = 2;
-    var mcscaling = .05;
+    var mccondition = 1;
+    var mcscaling = .1275;
 
     function mcolor(mccategory){
-    var meancolor = mcref + mccategory * mccondition * mcscaling;
+    meancolor = mcref + mccategory * mccondition * mcscaling;
     };
 
   //mean color parameters for incompatible trials
@@ -86,7 +118,7 @@ $(document).ready(function(){
     var mcscaling_inc = mcscaling;
 
     function mcolor_inc(mccategory_inc){
-    var meancolor_inc = mcref_inc + mccategory_inc * mccondition_inc * mcscaling_inc;
+    meancolor_inc = mcref_inc + mccategory_inc * mccondition_inc * mcscaling_inc;
     };
 
     //mean shape parameters
@@ -100,8 +132,8 @@ $(document).ready(function(){
     //};
 
   //standard deviation color parameters
-    var sdccondition = 2;
-    var sdcscaling = .05;
+    var sdccondition = 1;
+    var sdcscaling = 84.15;
     var sdcolor = sdccondition * sdcscaling;
 
     //standard deviation shape parameters
@@ -110,8 +142,6 @@ $(document).ready(function(){
     //var sdshape = sdscondition * sdsscaling
 
   //Drawing the squircle shape function
-    ctx.rotate(45 * Math.PI / 180)
-    ctx.translate(Math.sqrt(2*(450*450)),0);
 
     var color
     var locx
@@ -119,8 +149,9 @@ $(document).ready(function(){
     var degree = 2;
 
     function drawsquircle(color, locx, locy, degree) {
-        context.moveTo(900, 900);
-        context.beginPath();
+
+        ctx.moveTo(900, 900);
+        ctx.beginPath();
 
         //color options
         /*if (color == 1) {
@@ -136,7 +167,7 @@ $(document).ready(function(){
           col = "yellow"
         }*/
 
-        var col =   col = 'rgb('+color+','+0+','+(255-color)+')';
+        col = 'rgb('+color+','+0+','+(255-color)+')';
 
         //sets up the area and the n (ie. able to vary n to make more square or circle)
         var n = degree;
@@ -171,34 +202,36 @@ $(document).ready(function(){
 
           //plots
 
-          context.lineTo((x + locx), (y + locy));
+          ctx.lineTo((x + locx), (y + locy));
 
         }
-        context.closePath();
-        //context.rotate(315*(Math.PI/180));
+        ctx.closePath();
+        //ctx.rotate(315*(Math.PI/180));
 
         //fills with color
-        context.fillStyle = col;
-        context.fill();
-        //context.lineWidth = 10;
-        //context.strokeStyle = "black";
-        //context.stroke();
+        ctx.fillStyle = col;
+        ctx.fill();
+        //ctx.lineWidth = 10;
+        //ctx.strokeStyle = 'rgb('+color+','+0+','+(255-color)+')';;
+        //ctx.stroke();
     };
 
   //Draw WM screens
     function drawWMstim(){
       type = 1;
       $("#startButton").hide();
-      ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
+      ctx.clearRect(-450, -450, myCanvas.width, myCanvas.height);
 
-      drawsquircle(wmC, 0,0, 2)
+      drawsquircle(wmC, 0,0, 2);
+      stimscreencount++; ITIinterval = 1500;
+      timeout = setTimeout(showITI,WMinterval);
     };
 
   //Draw perceptual Decision Making screens
     function drawpDMstim(){
       type = 2;
       $("#startButton").hide();
-      ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
+      ctx.clearRect(-450, -450, myCanvas.width, myCanvas.height);
 
       drawsquircle(pdmC0, xcoordinate,ycoordinate, 2)
       drawsquircle(pdmC1, xcoordinate1,ycoordinate1, 2)
@@ -208,12 +241,35 @@ $(document).ready(function(){
       drawsquircle(pdmC5, xcoordinate5,ycoordinate5, 2)
       drawsquircle(pdmC6, xcoordinate6,ycoordinate6, 2)
       drawsquircle(pdmC7, xcoordinate7,ycoordinate7, 2)
+
+      ITIinterval = 1500;
     };
 
   //Draw WM probe screens
     function drawWMprobe(){
+      type = 5;
+      ctx.clearRect(-450, -450, myCanvas.width, myCanvas.height);
+      ctx.rotate((-45) * Math.PI / 180);
+      ctx.translate(-450,-450);
 
-    }
+      for (var y = 0, color = 255; y <= 900; y += 2, color -= .5) {
+          addLineSubPath(ctx, y, color);
+      }
+
+      function addLineSubPath(ctx, y, color) {
+          ctx.beginPath();
+          ctx.lineWidth = 2;
+          ctx.moveTo(y, 300);
+          ctx.lineTo(y, 600);
+
+          col = 'rgb('+color+','+0+','+(255-color)+')';
+          ctx.strokeStyle = col;
+          ctx.stroke();
+      }
+      //timeout = setTimeout(showITI,WMinterval);
+
+
+    };
 
   //Countdown, Shuffle, and ITI screens/functions
     function countDown(time)
@@ -224,7 +280,7 @@ $(document).ready(function(){
         $("#startButton").hide();
         ctx.fillStyle = "black";
         ctx.font="60px Arial";
-        ctx.clearRect(0,0, myCanvas.width, myCanvas.height);
+        ctx.clearRect(-450, -450, myCanvas.width, myCanvas.height);
         ctx.fillText(""+time, myCanvas.width/2, myCanvas.height/2);
         timeoutcountdown = setTimeout(function(){countDown(time-1)},1000);
       }
@@ -234,14 +290,15 @@ $(document).ready(function(){
       }
     };
 
-    function showITI(ITIinterval){
+    function showITI(){
       type = 4;
       $("#startButton").hide();
-      ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
+      ctx.clearRect(-450, -450, myCanvas.width, myCanvas.height);
       ctx.font="bold 50px Arial";
       ctx.fillStyle="black";
-      ctx.fillText("*",(myCanvas.width)/2,(myCanvas.height)/2);
-      instructions++;
+      ctx.textBaseline="middle";
+      ctx.textAlign="center";
+      ctx.fillText("*",0,0);
       /*if (count < 2 && i == 0){
         countDown(5)
       }
@@ -274,66 +331,100 @@ $(document).ready(function(){
     }
 
   //Variable setting functions
-    function removelargest(arr) {
-      var max = Math.max(...arr);
-      return arr.filter(e => e != max);
-    };
 
     function setValues() {
       mcolor(trialmatrix[random[i]][0] * 255);
       distribution = gaussian(meancolor, sdcolor);
-      sample = [distribution(Math.random()),distribution(Math.random()),distribution(Math.random()),distribution(Math.random()),
-                distribution(Math.random()),distribution(Math.random()),distribution(Math.random()),distribution(Math.random()),
-                distribution(Math.random())]
+      sample = [distribution(Math.floor(Math.random() * (255 - 0)) + 0),distribution(Math.floor(Math.random() * (255 - 0)) + 0),distribution(Math.floor(Math.random() * (255 - 0)) + 0),
+                distribution(Math.floor(Math.random() * (255 - 0)) + 0),distribution(Math.floor(Math.random() * (255 - 0)) + 0),distribution(Math.floor(Math.random() * (255 - 0)) + 0),
+                distribution(Math.floor(Math.random() * (255 - 0)) + 0),distribution(Math.floor(Math.random() * (255 - 0)) + 0),distribution(Math.floor(Math.random() * (255 - 0)) + 0)]
+
+
+      for (zz=0; zz<=8; zz++){
+        if(sample[zz]>255|sample[zz]<0){
+          sample.splice(zz,1,distribution(Math.floor(Math.random() * (255 - 0)) + 0));
+          zz = 0;
+        }
+      }
+
+      largest = 0;
+      for (ii=0; ii<=largest;ii++){
+      if (sample[ii]>largest) {
+          var largest=sample[ii];
+            }
+        }
 
       if (trialmatrix[random[i]][1] == 0){
-      wmC = Math.max(sample);
-      removelargest(sample);
+      wmC = largest;//Math.max(sample[0,8])
+      wmC = Math.round(wmC);
+      //removelargest(sample);
+
+      for (yy=0; yy<=largest;yy++){
+      if (sample[yy]==largest) {
+          sample.splice(yy,1);
+            }
+        }
       shuffle(sample);
-      pdmC0 = sample[0];
-      pdmC1 = sample[1];
-      pdmC2 = sample[2];
-      pdmC3 = sample[3];
-      pdmC4 = sample[4];
-      pdmC5 = sample[5];
-      pdmC6 = sample[6];
-      pdmC7 = sample[7];
+      pdmC0 = Math.round(sample[0]);
+      pdmC1 = Math.round(sample[1]);
+      pdmC2 = Math.round(sample[2]);
+      pdmC3 = Math.round(sample[3]);
+      pdmC4 = Math.round(sample[4]);
+      pdmC5 = Math.round(sample[5]);
+      pdmC6 = Math.round(sample[6]);
+      pdmC7 = Math.round(sample[7]);
       }
 
       else if (trialmatrix[random[i]][1] == 1){
         mcolor_inc((trialmatrix[random[i]][0]*-1) * 255);
         distribution_inc = gaussian(meancolor_inc, sdcolor);
-        sample_inc = [distribution_inc(Math.random()),distribution_inc(Math.random()),distribution_inc(Math.random()),distribution_inc(Math.random()),
-                  distribution_inc(Math.random()),distribution_inc(Math.random()),distribution_inc(Math.random()),distribution_inc(Math.random()),
-                  distribution_inc(Math.random())]
-        wmC = Math.max(sample_inc);
-        removelargest(sample);
-        shuffle(sample);
-        pdmC0 = sample[0];
-        pdmC1 = sample[1];
-        pdmC2 = sample[2];
-        pdmC3 = sample[3];
-        pdmC4 = sample[4];
-        pdmC5 = sample[5];
-        pdmC6 = sample[6];
-        pdmC7 = sample[7];
+        sample_inc = [distribution_inc(Math.floor(Math.random() * (255 - 0)) + 0),distribution_inc(Math.floor(Math.random() * (255 - 0)) + 0),distribution_inc(Math.floor(Math.random() * (255 - 0)) + 0),
+                      distribution_inc(Math.floor(Math.random() * (255 - 0)) + 0),distribution_inc(Math.floor(Math.random() * (255 - 0)) + 0),distribution_inc(Math.floor(Math.random() * (255 - 0)) + 0),
+                      distribution_inc(Math.floor(Math.random() * (255 - 0)) + 0),distribution_inc(Math.floor(Math.random() * (255 - 0)) + 0),distribution_inc(Math.floor(Math.random() * (255 - 0)) + 0)]
+
+        largest = 0;
+        for (ii=0; ii<=largest;ii++){
+        if (sample_inc[ii]>largest) {
+            var largest=sample_inc[ii];
+              }
+          }
+
+        wmC = largest;//Math.max(sample_inc[0,8]);
+        wmC = Math.round(wmC);
+        //removelargest(sample);
+
+        for (yy=0; yy<=largest;yy++){
+        if (sample_inc[yy]==largest) {
+            sample_inc.splice(yy,1);
+              }
+          }
+        shuffle(sample_inc);
+        pdmC0 = Math.round(sample_inc[0]);
+        pdmC1 = Math.round(sample_inc[1]);
+        pdmC2 = Math.round(sample_inc[2]);
+        pdmC3 = Math.round(sample_inc[3]);
+        pdmC4 = Math.round(sample_inc[4]);
+        pdmC5 = Math.round(sample_inc[5]);
+        pdmC6 = Math.round(sample_inc[6]);
+        pdmC7 = Math.round(sample_inc[7]);
       }
     }
 
   //runTrial
     function runTrial(){
         if (trialcount < random.length){
-          setValues()
-          if (trialmatrix[random[i]][1] < 2){
-          if (stimscreencount == 0){drawWMstim();}
-          else if (stimscreencount == 1){drawpDMstim();}
-          else if (stimscreencount == 2){stimscreencount = 0;}
+          if (stimscreencount == 0) {setValues(); stimscreencount++;}
+
+          if (trialmatrix[random[i]][2] == 0){
+          if (stimscreencount == 1){drawWMstim();}
+          else if (stimscreencount == 2){drawpDMstim();}
+          else if (stimscreencount == 3){stimscreencount = 0; i++; runTrial();}
             }
-          else if (trialmatrix[random[i]][1] == 2){
-            if (stimscreencount == 0){drawWMstim();}
-            else if (stimscreencount == 1){drawpDMstim();}
-            else if (stimscreencount == 2){drawWMprobe();}
-            else if (stimscreencount == 3){stimscreencount = 0;}
+          else if (trialmatrix[random[i]][2] == 1){
+            if (stimscreencount == 1){drawWMstim();}
+            else if (stimscreencount == 2){drawpDMstim();}
+            else if (stimscreencount == 3){drawWMprobe();}
+            else if (stimscreencount == 4){stimscreencount = 0; i++; runTrial();}
           }
 
         }
@@ -357,6 +448,43 @@ $(document).ready(function(){
       d1 = new Date();
       runStart = d1.getTime();
       runTrial();
+
+
+      $("body").keypress(function(event){
+        //clearTimeout();
+        key = String.fromCharCode(event.which);
+        //creates more data
+        d1 = new Date();
+        Ronset = d1.getTime()-runStart;
+        respTime = Ronset-onset;
+        acc = 0;
+
+        if (type == 0) {jokes++;}
+        if (type == 1) {clearTimeout(timeout); timeout = setTimeout(showITI,WMinterval);}
+        if (type == 2) {stimscreencount++; showITI()}
+        if (type == 3) {jokes++;}
+        if (type == 4) {clearTimeout(timeoutITI); showITI();}
+        if (type == 5) {jokes++;}
+
+      });
+
+      $("body").click(function(event){
+        //clearTimeout();
+        key = String.fromCharCode(event.which);
+        //creates more data
+        d1 = new Date();
+        Ronset = d1.getTime()-runStart;
+        respTime = Ronset-onset;
+        acc = 0;
+
+        if (type == 0) {jokes++;}
+        if (type == 1) {clearTimeout(timeout); timeout = setTimeout(showITI,WMinterval);}
+        if (type == 2) {jokes++;}
+        if (type == 3) {jokes++;}
+        if (type == 4) {clearTimeout(timeoutITI); showITI();}
+        if (type == 5) {stimscreencount++; ctx.rotate(45 * Math.PI / 180); ctx.translate(Math.sqrt(2*(450*450)),0); showITI()}
+
+      });
 
   });
 
