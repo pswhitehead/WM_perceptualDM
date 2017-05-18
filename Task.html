@@ -354,7 +354,15 @@ $(document).ready(function(){
             }
         }
 
+      smallest = 0;
+      for (ii=0; ii<=smallest;ii++){
+      if (sample[ii]<smallest) {
+          var smallest=sample[ii];
+            }
+        }
+
       if (trialmatrix[random[i]][1] == 0){
+        if (trialmatrix[random[i]][0] == 1){
       wmC = largest;//Math.max(sample[0,8])
       wmC = Math.round(wmC);
       //removelargest(sample);
@@ -364,6 +372,18 @@ $(document).ready(function(){
           sample.splice(yy,1);
             }
         }
+      }
+      else if (trialmatrix[random[i]][0] == -1){
+    wmC = smallest;//Math.max(sample[0,8])
+    wmC = Math.round(wmC);
+    //removelargest(sample);
+
+    for (yy=0; yy<=smallest;yy++){
+    if (sample[yy]==smallest) {
+        sample.splice(yy,1);
+          }
+      }
+    }
       shuffle(sample);
       pdmC0 = Math.round(sample[0]);
       pdmC1 = Math.round(sample[1]);
@@ -389,15 +409,36 @@ $(document).ready(function(){
               }
           }
 
-        wmC = largest;//Math.max(sample_inc[0,8]);
+        smallest = 0;
+        for (ii=0; ii<=smallest;ii++){
+        if (sample_inc[ii]<smallest) {
+            var smallest=sample_inc[ii];
+              }
+          }
+
+          if (trialmatrix[random[i]][1] == 0){
+            if (trialmatrix[random[i]][0] == 1){
+          wmC = largest;//Math.max(sample[0,8])
+          wmC = Math.round(wmC);
+          //removelargest(sample);
+
+          for (yy=0; yy<=largest;yy++){
+          if (sample_inc[yy]==largest) {
+              sample_inc.splice(yy,1);
+                }
+            }
+          }
+          else if (trialmatrix[random[i]][0] == -1){
+        wmC = smallest;//Math.max(sample[0,8])
         wmC = Math.round(wmC);
         //removelargest(sample);
 
-        for (yy=0; yy<=largest;yy++){
-        if (sample_inc[yy]==largest) {
+        for (yy=0; yy<=smallest;yy++){
+        if (sample_inc[yy]==smallest) {
             sample_inc.splice(yy,1);
               }
           }
+        }
         shuffle(sample_inc);
         pdmC0 = Math.round(sample_inc[0]);
         pdmC1 = Math.round(sample_inc[1]);
@@ -407,6 +448,7 @@ $(document).ready(function(){
         pdmC5 = Math.round(sample_inc[5]);
         pdmC6 = Math.round(sample_inc[6]);
         pdmC7 = Math.round(sample_inc[7]);
+        }
       }
     }
 
