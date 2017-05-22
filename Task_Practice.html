@@ -26,9 +26,9 @@ $(document).ready(function(){
     var WMinterval = 500;
     var probeaccrange = 50;//the deviation (in number of colors, from 256 possible colors) from actual color on the probe trials you are willing to accept as correct
     var ITIinterval
-    var numberoftrials = 200;//must be a multiple of 10 currently for balenced design
-    var acccount;
-    var acctotalcount;
+    var numberoftrials = 10;//must be a multiple of 10 currently for balenced design
+    acccount = 0;
+    acctotalcount = 0;
     var instructionson = 0;
     var block = 0;
 
@@ -63,7 +63,7 @@ $(document).ready(function(){
 
     trialmatrix = [];
     for (var arraymaker=0; arraymaker<(numberoftrials/10); arraymaker++){
-        trialmatrix = trialmatrix.concat(type1,type1,type2,type2,type4,type4,type5,type5,type3,type6);
+        trialmatrix = trialmatrix.concat(type1,type2,type4,type5,type5,type3,type6,type3,type6,type3);
     };
 
 
@@ -391,7 +391,7 @@ $(document).ready(function(){
 
       if (instructioncount > 0){
       ctx.fillText("This is a short break. Your accuracy is: " +Math.round((acccount/acctotalcount)*100)+" %", (myCanvas.width/2), (myCanvas.height/2)-350);
-      ctx.fillText("You have completed " +(block+1)+" of "+Math.round(numberoftrials/100)+ " blocks.", (myCanvas.width/2), (myCanvas.height/2)-300);
+      ctx.fillText("You have completed " +(block+1)+" of "+Math.round(numberoftrials/5)+ " blocks.", (myCanvas.width/2), (myCanvas.height/2)-300);
       ctx.fillText("Please remember the color of the initial circle presented in each sequence.", (myCanvas.width/2), (myCanvas.height/2)-250);
       ctx.textAlign="left";
       ctx.fillText("In the following screen you will be asked to either:", (0.0), (myCanvas.height/2)-100);
@@ -401,7 +401,7 @@ $(document).ready(function(){
       ctx.fillText("  If it is more red, press " +button1, (0.0), (myCanvas.height/2)+150);
       ctx.fillText("  If it is more blue, press " +button2, (0.0), (myCanvas.height/2)+200);
       ctx.textAlign="center";
-      ctx.fillText("Press any button to begin the task.", (myCanvas.width/2), (myCanvas.height/2)+300);
+      ctx.fillText("Press any button to continue.", (myCanvas.width/2), (myCanvas.height/2)+300);
       block++;
         }
     };
@@ -512,7 +512,7 @@ $(document).ready(function(){
     function runTrial(){
         if (trialcount < random.length){
           if (stimscreencount == 0) {setValues(); stimscreencount++;}
-          if ((trialcount+instructionson == 0 || (trialcount+instructionson) % 100 === 0)) {instructionson = 1; instructions();}
+          if ((trialcount+instructionson == 0 || (trialcount+instructionson) % 5 === 0)) {instructionson = 1; instructions();}
           else if (stimscreencount == 1){drawWMstim();}
           else if (stimscreencount == 2){
             if (trialmatrix[random[i]][2] == 0){drawpDMstim();}
@@ -522,13 +522,7 @@ $(document).ready(function(){
             }
         else {
             //alert(data.join(";"));
-            $("#info").css("color","white");
-            //$("#info").show();
-            $("#info").text(data.join(";"));
-            //$("#mturk_form").show();
-            $("#RTs", opener.window.document).val(data.join(";"));
-            opener.updateMainMenu(4);
-            JavaScript:window.close();
+            instructions();
           }
         };
 
@@ -562,12 +556,14 @@ $(document).ready(function(){
               if (key == "s" || key == "S"){acc=1;acccount++;}
             }
           }
-          data[logCounter] = ["NR:", block, Ronset, key, respTime, acc, trialmatrix[random[i]][0], trialmatrix[random[i]][1], trialmatrix[random[i]][2], wmC, pdmC0, pdmC1, pdmC2, pdmC3, pdmC4, pdmC5, pdmC6, pdmC7];
           logCounter++; acctotalcount++; stimscreencount++; showITI();}
         if (type == 3) {jokes++;}
         if (type == 4) {clearTimeout(timeoutITI); showITI();}
         if (type == 5) {jokes++;}
-        if (type == 6) {ctx.rotate(45 * Math.PI / 180); ctx.translate(Math.sqrt(2*(450*450)),0); instructioncount++; countDown(3);}
+        if (type == 6) {
+          if (trialcount==random.length){opener.updateMainMenu(3);
+          JavaScript:window.close();}
+          ctx.rotate(45 * Math.PI / 180); ctx.translate(Math.sqrt(2*(450*450)),0); instructioncount++; countDown(3);}
 
       });
 
@@ -590,7 +586,6 @@ $(document).ready(function(){
           if (wmC == 255){correctmin = -10; correctmax = 11;}
           else if (wmC < 255){correctmin = (((255-wmC)*2)-probeaccrange)+offset_probe; correctmax = (((255-wmC)*2)+(probeaccrange+1))+offset_probe}
           if (key >= correctmin & key <= correctmax) {acc=1;acccount++;}
-          data[logCounter] = ["NR:", block, Ronset, key, respTime, acc, trialmatrix[random[i]][0], trialmatrix[random[i]][1], trialmatrix[random[i]][2], wmC, pdmC0, pdmC1, pdmC2, pdmC3, pdmC4, pdmC5, pdmC6, pdmC7];
           logCounter++; acctotalcount++; stimscreencount++; ctx.rotate(45 * Math.PI / 180); ctx.translate(Math.sqrt(2*(450*450)),0); showITI()}
         if (type == 6) {jokes++;}
       });
