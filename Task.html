@@ -132,7 +132,7 @@ $(document).ready(function(){
   //mean color parameters for compatible trials
     var mcref = (255/2);
     var mccategory = 255;
-    var mccondition = 2;
+    var mccondition = 4;
     var mcscaling = .05;
 
     function mcolor(mccategory){
@@ -324,21 +324,34 @@ $(document).ready(function(){
     function showITI(){
       type = 4;
       $("#startButton").hide();
+      ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
       ctx.clearRect(-450, -450, myCanvas.width, myCanvas.height);
+      ctx.rotate((-45) * Math.PI / 180);
+      ctx.translate(-450,-450);
       ctx.font="bold 50px Arial";
       ctx.fillStyle="black";
       ctx.textBaseline="middle";
-      ctx.textAlign="right";
-      ctx.fillText("*",0,0);
-      /*if (count < 2 && i == 0){
-        countDown(5)
+      ctx.textAlign="center";
+      ctx.fillText("*",myCanvas.width/2,myCanvas.height/2);
+      if (acc == 1 & stimscreencount == 3){
+        ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
+        ctx.clearRect(-450, -450, myCanvas.width, myCanvas.height);
+        ctx.font="bold 50px Arial";
+        ctx.fillStyle="black";
+        ctx.textBaseline="middle";
+        ctx.textAlign="center";
+        ctx.fillText("Correct",myCanvas.width/2,myCanvas.height/2);
       }
-      else if (count >= 2 && i == 0){
-        countDown(3)
+      else if (acc == 0 & stimscreencount == 3){
+        ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
+        ctx.clearRect(-450, -450, myCanvas.width, myCanvas.height);
+        ctx.font="bold 50px Arial";
+        ctx.fillStyle="black";
+        ctx.textBaseline="middle";
+        ctx.textAlign="center";
+        ctx.fillText("Incorrect",myCanvas.width/2,myCanvas.height/2);
       }
-      else {
-        timeoutITI = setTimeout(runTrial,ITIinterval);
-      }*/
+      ctx.rotate(45 * Math.PI / 180); ctx.translate(Math.sqrt(2*(450*450)),0);
       timeoutITI = setTimeout(runTrial,ITIinterval);
     };
 
@@ -408,6 +421,19 @@ $(document).ready(function(){
 
   //Variable setting functions
 
+    function checkarray(arr) {
+      arr.sort();
+      valueadd = 1;
+      for (aa=0; aa<arr.length; aa++){
+        if (aa < (arr.length)-1){valueadd = -1;}
+        if(Math.round(arr[aa])>255 || Math.round(arr[aa])<0
+            || Math.round(arr[aa]==arr[aa+valueadd])){
+              arr.splice(aa,1,distribution(Math.floor(Math.random() * (255 - 0)) + 0));
+              aa = 0;
+            }
+          }
+        }
+
     function setValues() {
       mcolor(trialmatrix[random[i]][0] * 255);
       distribution = gaussian(meancolor, sdcolor);
@@ -416,12 +442,8 @@ $(document).ready(function(){
                 distribution(Math.floor(Math.random() * (255 - 0)) + 0),distribution(Math.floor(Math.random() * (255 - 0)) + 0),distribution(Math.floor(Math.random() * (255 - 0)) + 0)]
 
 
-      for (zz=0; zz<=8; zz++){
-        if(sample[zz]>255|sample[zz]<0){
-          sample.splice(zz,1,distribution(Math.floor(Math.random() * (255 - 0)) + 0));
-          zz = 0;
-        }
-      }
+      checkarray(sample)
+      shuffle(sample)
 
       largest = 0;
       for (ii=0; ii<=largest;ii++){
@@ -473,15 +495,11 @@ $(document).ready(function(){
                       distribution_inc(Math.floor(Math.random() * (255 - 0)) + 0),distribution_inc(Math.floor(Math.random() * (255 - 0)) + 0),distribution_inc(Math.floor(Math.random() * (255 - 0)) + 0),
                       distribution_inc(Math.floor(Math.random() * (255 - 0)) + 0),distribution_inc(Math.floor(Math.random() * (255 - 0)) + 0)]
 
-        for (zz=0; zz<=8; zz++){
-          if(sample_inc[zz]>255|sample_inc[zz]<0){
-            sample_inc.splice(zz,1,distribution_inc(Math.floor(Math.random() * (255 - 0)) + 0));
-            zz = 0;
-          }
-        }
+        checkarray(sample_inc)
+        shuffle(sample_inc)
 
         repeat = 0;
-        for (ii=0; ii<=sample_inc.length;ii++){
+        for (ii=0; ii<sample_inc.length;ii++){
         if (Math.round(sample_inc[ii])==Math.round(wmC)) {
             sample_inc.splice(ii,1,distribution_inc(Math.floor(Math.random() * (255 - 0)) + 0));
             for (zz=0; zz<=8; zz++){
@@ -547,21 +565,41 @@ $(document).ready(function(){
         if (type == 1) {clearTimeout(timeout); timeout = setTimeout(showITI,WMinterval);}
         if (type == 2) {
           if (responsebutton[0] == 0){
-            if (trialmatrix[random[i]][0] == -1){
-              if (key == "s" || key == "S"){acc=1;acccount++;}
+            if (trialmatrix[random[i]][1] == 0){
+              if (trialmatrix[random[i]][0] == -1){
+                if (key == "s" || key == "S"){acc=1;acccount++;}
+              }
+              if (trialmatrix[random[i]][0] == 1){
+                if (key == "a" || key == "A"){acc=1;acccount++;}
+                }
+              }
+            else if (trialmatrix[random[i]][1] == 1){
+              if (trialmatrix[random[i]][0] == -1){
+                if (key == "a" || key == "A"){acc=1;acccount++;}
+              }
+              if (trialmatrix[random[i]][0] == 1){
+                if (key == "s" || key == "S"){acc=1;acccount++;}
+                }
+              }
             }
-            if (trialmatrix[random[i]][0] == 1){
-              if (key == "a" || key == "A"){acc=1;acccount++;}
-            }
-          }
           else if (responsebutton[0] == 1){
-            if (trialmatrix[random[i]][0] == -1){
-              if (key == "a" || key == "A"){acc=1;acccount++;}
+            if (trialmatrix[random[i]][1] == 0){
+              if (trialmatrix[random[i]][0] == -1){
+                if (key == "a" || key == "A"){acc=1;acccount++;}
+              }
+              if (trialmatrix[random[i]][0] == 1){
+                if (key == "s" || key == "S"){acc=1;acccount++;}
+                }
+              }
+            else if (trialmatrix[random[i]][1] == 1){
+              if (trialmatrix[random[i]][0] == -1){
+                if (key == "s" || key == "S"){acc=1;acccount++;}
+              }
+              if (trialmatrix[random[i]][0] == 1){
+                if (key == "a" || key == "A"){acc=1;acccount++;}
+                }
+              }
             }
-            if (trialmatrix[random[i]][0] == 1){
-              if (key == "s" || key == "S"){acc=1;acccount++;}
-            }
-          }
           data[logCounter] = ["NR:", block, Ronset, key, respTime, acc, trialmatrix[random[i]][0], trialmatrix[random[i]][1], trialmatrix[random[i]][2], wmC, pdmC0, pdmC1, pdmC2, pdmC3, pdmC4, pdmC5, pdmC6, pdmC7];
           logCounter++; acctotalcount++; stimscreencount++; showITI();}
         if (type == 3) {jokes++;}

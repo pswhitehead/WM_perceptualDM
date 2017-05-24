@@ -132,7 +132,7 @@ $(document).ready(function(){
   //mean color parameters for compatible trials
     var mcref = (255/2);
     var mccategory = 255;
-    var mccondition = 2;
+    var mccondition = 5;
     var mcscaling = .05;
 
     function mcolor(mccategory){
@@ -324,21 +324,34 @@ $(document).ready(function(){
     function showITI(){
       type = 4;
       $("#startButton").hide();
+      ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
       ctx.clearRect(-450, -450, myCanvas.width, myCanvas.height);
+      ctx.rotate((-45) * Math.PI / 180);
+      ctx.translate(-450,-450);
       ctx.font="bold 50px Arial";
       ctx.fillStyle="black";
       ctx.textBaseline="middle";
-      ctx.textAlign="right";
-      ctx.fillText("*",0,0);
-      /*if (count < 2 && i == 0){
-        countDown(5)
+      ctx.textAlign="center";
+      ctx.fillText("*",myCanvas.width/2,myCanvas.height/2);
+      if (acc == 1 & stimscreencount == 3){
+        ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
+        ctx.clearRect(-450, -450, myCanvas.width, myCanvas.height);
+        ctx.font="bold 50px Arial";
+        ctx.fillStyle="black";
+        ctx.textBaseline="middle";
+        ctx.textAlign="center";
+        ctx.fillText("Correct",myCanvas.width/2,myCanvas.height/2);
       }
-      else if (count >= 2 && i == 0){
-        countDown(3)
+      else if (acc == 0 & stimscreencount == 3){
+        ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
+        ctx.clearRect(-450, -450, myCanvas.width, myCanvas.height);
+        ctx.font="bold 50px Arial";
+        ctx.fillStyle="black";
+        ctx.textBaseline="middle";
+        ctx.textAlign="center";
+        ctx.fillText("Incorrect",myCanvas.width/2,myCanvas.height/2);
       }
-      else {
-        timeoutITI = setTimeout(runTrial,ITIinterval);
-      }*/
+      ctx.rotate(45 * Math.PI / 180); ctx.translate(Math.sqrt(2*(450*450)),0);
       timeoutITI = setTimeout(runTrial,ITIinterval);
     };
 
@@ -541,21 +554,41 @@ $(document).ready(function(){
         if (type == 1) {clearTimeout(timeout); timeout = setTimeout(showITI,WMinterval);}
         if (type == 2) {
           if (responsebutton[0] == 0){
-            if (trialmatrix[random[i]][0] == -1){
-              if (key == "s" || key == "S"){acc=1;acccount++;}
+            if (trialmatrix[random[i]][1] == 0){
+              if (trialmatrix[random[i]][0] == -1){
+                if (key == "s" || key == "S"){acc=1;acccount++;}
+              }
+              if (trialmatrix[random[i]][0] == 1){
+                if (key == "a" || key == "A"){acc=1;acccount++;}
+                }
+              }
+            else if (trialmatrix[random[i]][1] == 1){
+              if (trialmatrix[random[i]][0] == -1){
+                if (key == "a" || key == "A"){acc=1;acccount++;}
+              }
+              if (trialmatrix[random[i]][0] == 1){
+                if (key == "s" || key == "S"){acc=1;acccount++;}
+                }
+              }
             }
-            if (trialmatrix[random[i]][0] == 1){
-              if (key == "a" || key == "A"){acc=1;acccount++;}
-            }
-          }
           else if (responsebutton[0] == 1){
-            if (trialmatrix[random[i]][0] == -1){
-              if (key == "a" || key == "A"){acc=1;acccount++;}
+            if (trialmatrix[random[i]][1] == 0){
+              if (trialmatrix[random[i]][0] == -1){
+                if (key == "a" || key == "A"){acc=1;acccount++;}
+              }
+              if (trialmatrix[random[i]][0] == 1){
+                if (key == "s" || key == "S"){acc=1;acccount++;}
+                }
+              }
+            else if (trialmatrix[random[i]][1] == 1){
+              if (trialmatrix[random[i]][0] == -1){
+                if (key == "s" || key == "S"){acc=1;acccount++;}
+              }
+              if (trialmatrix[random[i]][0] == 1){
+                if (key == "a" || key == "A"){acc=1;acccount++;}
+                }
+              }
             }
-            if (trialmatrix[random[i]][0] == 1){
-              if (key == "s" || key == "S"){acc=1;acccount++;}
-            }
-          }
           logCounter++; acctotalcount++; stimscreencount++; showITI();}
         if (type == 3) {jokes++;}
         if (type == 4) {clearTimeout(timeoutITI); showITI();}
