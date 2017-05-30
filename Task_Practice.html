@@ -23,9 +23,8 @@ $(document).ready(function(){
     var stimscreencount = 0;
     var i=0;
     var area = 6000;
-    var WMinterval = 500;
+    var WMinterval = 200;
     var probeaccrange = 50;//the deviation (in number of colors, from 256 possible colors) from actual color on the probe trials you are willing to accept as correct
-    var ITIinterval
     var numberoftrials = 10;//must be a multiple of 10 currently for balenced design
     acccount = 0;
     acctotalcount = 0;
@@ -132,7 +131,7 @@ $(document).ready(function(){
   //mean color parameters for compatible trials
     var mcref = (255/2);
     var mccategory = 255;
-    var mccondition = 5;
+    var mccondition = 3;
     var mcscaling = .05;
 
     function mcolor(mccategory){
