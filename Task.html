@@ -24,7 +24,7 @@ $(document).ready(function(){
     var area = 6000;
     var WMinterval = 250;
     var preWMstimbuffer = 250
-    var coloraveragingpresentationtime = 500;
+    var coloraveragingpresentationtime = 750;
     var probeaccrange = 40;//the deviation (in number of colors, from 256 possible colors) from actual color on the probe trials you are willing to accept as correct
     var numberofblocks = 5;
     var blocklength = 128;
@@ -480,6 +480,7 @@ $(document).ready(function(){
         if(Math.round(arr[aa])>255 || Math.round(arr[aa])<0
             || Math.round(arr[aa]==arr[aa+valueadd]) || Math.round(arr[aa]==wmC)){
               arr.splice(aa,1,distribution(Math.floor(Math.random() * (255 - 0)) + 0));
+              arr.sort();
               aa = 0;
             }
           }
