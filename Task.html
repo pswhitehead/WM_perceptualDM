@@ -11,6 +11,7 @@ $(document).ready(function(){
 
   var c = document.getElementById("myCanvas");
   var ctx = c.getContext("2d");
+  document.getElementById("myCanvas").style.cursor = "none";
   ctx.rotate(45 * Math.PI / 180);
   ctx.translate(Math.sqrt(2*(450*450)),0);
 
@@ -25,7 +26,7 @@ $(document).ready(function(){
     var WMinterval = 500;
     var preWMstimbuffer = 250
     var coloraveragingpresentationtime = 500;
-    var probeaccrange = 40;//the deviation (in number of colors, from 256 possible colors) from actual color on the probe trials you are willing to accept as correct
+    var probeaccrange = 30;//the deviation (in number of colors, from 256 possible colors) from actual color on the probe trials you are willing to accept as correct
     var numberofblocks = 5;
     var blocklength = 128;
     var instructionson = 0;
@@ -34,6 +35,8 @@ $(document).ready(function(){
     i=0;
     acccount = 0;
     acctotalcount = 0;
+    notfullscreen = 0;
+    drawcorrectanswercounter = 0;
 
     //response button shuffle
     var responsebutton = [0,1];
@@ -305,6 +308,8 @@ $(document).ready(function(){
   //Draw WM probe screens
     function drawWMprobe(){
       type = 5;
+      drawcorrectanswercounter = 0;
+      document.getElementById("myCanvas").style.cursor = "pointer";
       ctx.clearRect(-450, -450, myCanvas.width, myCanvas.height);
       ctx.rotate((-45) * Math.PI / 180);
       ctx.translate(-450,-450);
@@ -324,32 +329,57 @@ $(document).ready(function(){
           ctx.strokeStyle = col;
           ctx.stroke();
       }
-      //timeout = setTimeout(showITI,WMinterval);
-      $("body").click(function(event){
-        //clearTimeout();
-        var rect = myCanvas.getBoundingClientRect();
-        if (type == 5) {key = event.clientX-rect.left;};
-        //creates more data
-        d1 = new Date();
-        Ronset = d1.getTime()-runStart;
-        respTime = Ronset-onset;
-        acc = 0;
-
-        if (type == 0) {jokes++;}
-        if (type == 1) {clearTimeout(timeout); timeout = setTimeout(showITI,WMinterval);}
-        if (type == 2) {jokes++;}
-        if (type == 3) {jokes++;}
-        if (type == 4) {clearTimeout(timeoutITI); showITI();}
-        if (type == 5) {
-          if (wmC == 255){correctmin = -10; correctmax = 11;}
-          else if (wmC < 255){correctmin = (((255-wmC)*2)-probeaccrange)+offset_probe; correctmax = (((255-wmC)*2)+(probeaccrange+1))+offset_probe}
-          if (key >= correctmin & key <= correctmax) {acc=1;acccount++;}
-          data[logCounter] = ["NR:", block, Ronset, key, respTime, acc, trialmatrix[random[i]][0], trialmatrix[random[i]][1], trialmatrix[random[i]][2], trialmatrix[random[i]][3], wmC, pdmC0, pdmC1, pdmC2, pdmC3, pdmC4, pdmC5, pdmC6, pdmC7];
-          logCounter++; acctotalcount++; stimscreencount++; ctx.rotate(45 * Math.PI / 180); ctx.translate(Math.sqrt(2*(450*450)),0); showITI()}
-        if (type == 6) {jokes++;}
-      });
-
+      ITIinterval = 750;
     };
+
+    function drawcorrectanswer(){
+      type = 5;
+      drawcorrectanswercounter++;
+      document.getElementById("myCanvas").style.cursor = "pointer";
+      offset_probe = 195;
+
+      if (acc == 1 & stimscreencount == 2){
+        ctx.font="bold 50px Arial";
+        ctx.fillStyle="black";
+        ctx.textBaseline="middle";
+        ctx.textAlign="center";
+        ctx.fillText("Correct",myCanvas.width/2,(myCanvas.height/2)-225);
+      }
+      else if (acc == 0 & stimscreencount == 2){
+        ctx.font="bold 50px Arial";
+        ctx.fillStyle="black";
+        ctx.textBaseline="middle";
+        ctx.textAlign="center";
+        ctx.fillText("Incorrect",myCanvas.width/2,(myCanvas.height/2)-225);
+      }
+
+      ctx.beginPath();
+
+      if (wmC < 255-probeaccrange && wmC > probeaccrange-1){
+        ctx.moveTo(((255-wmC)*2)-probeaccrange+offset_probe, 280);
+        ctx.lineTo(((255-wmC)*2)+1+probeaccrange+offset_probe, 280);
+        ctx.lineTo(((255-wmC)*2)+1+probeaccrange+offset_probe, 620);
+        ctx.lineTo(((255-wmC)*2)-probeaccrange+offset_probe, 620);
+      }
+      else if (wmC > 255-probeaccrange-1){
+        ctx.moveTo(offset_probe, 280);
+        ctx.lineTo(offset_probe+(probeaccrange*2), 280);
+        ctx.lineTo(offset_probe+(probeaccrange*2), 620);
+        ctx.lineTo(offset_probe, 620);
+      }
+      else if (wmC < probeaccrange){
+        ctx.moveTo(offset_probe+(255*2)-(probeaccrange*2), 280);
+        ctx.lineTo(offset_probe+(255*2), 280);
+        ctx.lineTo(offset_probe+(255*2), 620);
+        ctx.lineTo(offset_probe+(255*2)-(probeaccrange*2), 620);
+      }
+      ctx.fillStyle = "grey";
+      ctx.globalAlpha = 0.65
+      ctx.fill();
+      document.getElementById("myCanvas").style.cursor = "none";
+      ctx.rotate(45 * Math.PI / 180); ctx.translate(Math.sqrt(2*(450*450)),0); ctx.globalAlpha = 1;
+      timeoutWMprobe = setTimeout(runTrial,1000);
+    }
 
   //Countdown, Shuffle, and ITI screens/functions
     function countDown(time)
@@ -402,9 +432,62 @@ $(document).ready(function(){
         ctx.textAlign="center";
         ctx.fillText("Incorrect",myCanvas.width/2,myCanvas.height/2);
       }
+
       ctx.rotate(45 * Math.PI / 180); ctx.translate(Math.sqrt(2*(450*450)),0);
       timeoutITI = setTimeout(runTrial,ITIinterval);
     };
+
+    function wrongbuttonpress(){
+      type = 2;
+      ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
+      ctx.clearRect(-450, -450, myCanvas.width, myCanvas.height);
+      ctx.rotate((-45) * Math.PI / 180);
+      ctx.translate(-450,-450);
+      ctx.font="bold 50px Arial";
+      ctx.fillStyle="black";
+      ctx.textBaseline="middle";
+      ctx.textAlign="center";
+      ctx.fillText("Wrong response option. Try again.",myCanvas.width/2,myCanvas.height/2);
+      ctx.rotate(45 * Math.PI / 180); ctx.translate(Math.sqrt(2*(450*450)),0);
+    }
+
+    function nonfullscreen(){
+      type = 7;
+      ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
+      ctx.clearRect(-450, -450, myCanvas.width, myCanvas.height);
+      ctx.rotate((-45) * Math.PI / 180);
+      ctx.translate(-450,-450);
+      ctx.font="bold 30px Arial";
+      ctx.fillStyle="black";
+      ctx.textBaseline="middle";
+      ctx.textAlign="center";
+      if (notfullscreen == 0){
+      ctx.fillText("Your screen is not full screen.",myCanvas.width/2,myCanvas.height/2);
+      ctx.fillText("Please correct this and press any button to continue.",myCanvas.width/2,(myCanvas.height/2)+50);
+      ctx.fillText("If you exit full screen one more time during this experiment,",myCanvas.width/2,(myCanvas.height/2)+100);
+      ctx.fillText("you will have to restart the experiment and will not be paid",myCanvas.width/2,(myCanvas.height/2)+150);
+      ctx.fillText("for the previous time you have spent doing the experiment.",myCanvas.width/2,(myCanvas.height/2)+200);
+      notfullscreen++;
+      }
+      else {ctx.fillText("Please refresh the page to restart the experiment.",myCanvas.width/2,myCanvas.height/2);
+      notfullscreen++;
+      }
+      ctx.rotate(45 * Math.PI / 180); ctx.translate(Math.sqrt(2*(450*450)),0);
+    }
+
+    function checkSize()
+  	{
+  		var w = window.innerWidth;
+  		var h = window.innerHeight;
+  		if (w < 1500 || h < 1000) // 800 by 600 is the lowest resolution on my laptop; seems like a good "minimum" (basically need 500 x 500 at least)
+          {
+  			checkwindowsize = 1;
+  		}
+  		else // if their screen is the proper size...
+  		{
+        checkwindowsize = 0;
+  		}
+  	}
 
     function shuffle(array) {
       var currentIndex = array.length, temporaryValue, randomIndex;
@@ -428,6 +511,7 @@ $(document).ready(function(){
   //instruction screens
     function instructions(){
       type = 6;
+      document.getElementById("myCanvas").style.cursor = "pointer";
       $("#startButton").hide();
       ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
       ctx.clearRect(-450, -450, myCanvas.width, myCanvas.height);
@@ -512,16 +596,20 @@ $(document).ready(function(){
   //runTrial
     function runTrial(){
         if (trialcount < random.length*numberofblocks){
+
           if (wmCcounter == wmCvalues.length){shuffle(wmCvalues); wmCcounter = 0;}
           if ((trialcount+instructionson == 0 || (trialcount+instructionson) % blocklength === 0)) {
               instructionson = 1; i = 0; shuffle(random); instructions();}
-          else if (stimscreencount == 0){setValues(); drawWMstim();}
+
+          else if (stimscreencount == 0){checkSize();
+            if (checkwindowsize == 0) {setValues(); drawWMstim();}
+            else if (checkwindowsize == 1) {nonfullscreen();}}
           else if (stimscreencount == 1){
-            if (trialmatrix[random[i]][2] == 0){drawpDMstim();}
-            else if (trialmatrix[random[i]][2] == 1){drawWMprobe();}
+            if (trialmatrix[random[i]][3] == 0){drawpDMstim();}
+            else if (trialmatrix[random[i]][3] == 1){drawWMprobe();}
             }
           else if (stimscreencount == 2){stimscreencount = 0; i++; trialcount++; wmCcounter++; instructionson = 0; runTrial();}
-            }
+        }
         else {
             //alert(data.join(";"));
             $("#info").css("color","white");
@@ -544,7 +632,6 @@ $(document).ready(function(){
         Ronset = d1.getTime()-runStart;
         respTime = Ronset-onset;
         acc = 0;
-
         if (type == 0) {jokes++;}
         else if (type == 1) {clearTimeout(timeout); timeout = setTimeout(showITI,WMinterval);}
         else if (type == 2) {
@@ -564,13 +651,45 @@ $(document).ready(function(){
               if (key == "s" || key == "S"){acc=1;acccount++;}
               }
             };
+
+          if(key == "s" || key == "S" || key == "a" || key == "A"){
           data[logCounter] = ["NR:", block, Ronset, key, respTime, acc, trialmatrix[random[i]][0], trialmatrix[random[i]][1], trialmatrix[random[i]][2], trialmatrix[random[i]][3], wmC, pdmC0, pdmC1, pdmC2, pdmC3, pdmC4, pdmC5, pdmC6, pdmC7];
-          logCounter++; acctotalcount++; stimscreencount++; clearTimeout(timeoutDMstim); showITI();}
+          logCounter++; acctotalcount++; stimscreencount++; clearTimeout(timeoutDMstim); showITI();
+          }
+          else {wrongbuttonpress()}
+        }
         else if (type == 3) {jokes++;}
         else if (type == 4) {clearTimeout(timeoutITI); showITI();}
         else if (type == 5) {jokes++;}
-        else if (type == 6) {ctx.rotate(45 * Math.PI / 180); ctx.translate(Math.sqrt(2*(450*450)),0); instructioncount++; countDown(3);}
+        else if (type == 6) {ctx.rotate(45 * Math.PI / 180); ctx.translate(Math.sqrt(2*(450*450)),0); instructioncount++; document.getElementById("myCanvas").style.cursor = "none"; countDown(3);}
+        else if (type == 7) {checkSize(); if (checkwindowsize == 0 && notfullscreen == 1) {countDown(3);} else {jokes++;}}
+      });
 
+      $("body").click(function(event){
+        //clearTimeout();
+        var rect = myCanvas.getBoundingClientRect();
+        if (type == 5) {key = event.clientX-rect.left;};
+        //creates more data
+        d1 = new Date();
+        Ronset = d1.getTime()-runStart;
+        respTime = Ronset-onset;
+        acc = 0;
+
+        if (type == 0) {jokes++;}
+        if (type == 1) {clearTimeout(timeout); timeout = setTimeout(showITI,WMinterval);}
+        if (type == 2) {jokes++;}
+        if (type == 3) {jokes++;}
+        if (type == 4) {clearTimeout(timeoutITI); showITI();}
+        if (type == 5) {
+          if (wmC < 255-probeaccrange && wmC > probeaccrange-1){correctmin = ((255-wmC)*2)-probeaccrange+offset_probe; correctmax = ((255-wmC)*2)+1+probeaccrange+offset_probe;}
+          else if (wmC > 255-probeaccrange-1) {correctmin = offset_probe; correctmax = offset_probe+(probeaccrange*2)}
+          else if (wmC < probeaccrange){correctmin = offset_probe+(256*2)-(probeaccrange*2); correctmax = offset_probe+(256*2)}
+
+          if (key >= correctmin & key <= correctmax) {acc=1;acccount++;}
+            data[logCounter] = ["NR:", block, Ronset, key, respTime, acc, trialmatrix[random[i]][0], trialmatrix[random[i]][1], trialmatrix[random[i]][2], trialmatrix[random[i]][3], wmC, pdmC0, pdmC1, pdmC2, pdmC3, pdmC4, pdmC5, pdmC6, pdmC7];
+            logCounter++; acctotalcount++; stimscreencount++; document.getElementById("myCanvas").style.cursor = "none"; drawcorrectanswercounter++; drawcorrectanswer();
+            }
+        if (type == 6) {jokes++;}
       });
 
     //Start stuff
@@ -579,6 +698,8 @@ $(document).ready(function(){
     d1 = new Date();
     runStart = d1.getTime();
     runTrial();
+
+
 
   });
 

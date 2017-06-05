@@ -30,10 +30,22 @@
       ctx.clearRect(0, 600, myCanvas.width, 650);
       if (accuracy == 1){ctx.fillText("Correct!", (myCanvas.width)/2, 650);}
       else if (accuracy == 0){ctx.fillText("Incorrect!", (myCanvas.width)/2, 650);}
+
+      ctx.moveTo(((255-wmC)*2)-probeaccrange+offset_probe, 300);
+      ctx.lineTo(((255-wmC)*2)+1+probeaccrange+offset_probe, 300);
+      ctx.lineTo(((255-wmC)*2)+1+probeaccrange+offset_probe, 620);
+      ctx.lineTo(((255-wmC)*2)-probeaccrange+offset_probe, 620);
+      ctx.fillStyle="grey"
+      ctx.globalAlpha = 0.65
+      ctx.fill();
+
       ctx.fillStyle="black";
-      ctx.fillText("__________________________________________", (myCanvas.width/2), (myCanvas.height/2)+260);
-      ctx.fillText("Use the buttons below to see the next instructions or go back", (myCanvas.width/2), (myCanvas.height/2)+300);
-      ctx.fillText("to the previous instructions.", (myCanvas.width/2), (myCanvas.height/2)+350);
+      ctx.globalAlpha = 1;
+      ctx.fillText("__________________________________________", (myCanvas.width/2), (myCanvas.height/2)+310);
+      ctx.fillText("A grey box like the one above will always indicate", (myCanvas.width/2), (myCanvas.height/2)+250);
+      ctx.fillText("the correct answer after your have clicked.", (myCanvas.width/2), (myCanvas.height/2)+300);
+      ctx.fillText("Use the buttons below to see the next instructions or go back", (myCanvas.width/2), (myCanvas.height/2)+350);
+      ctx.fillText("to the previous instructions.", (myCanvas.width/2), (myCanvas.height/2)+400);
     }
 
     function blockinstruction1(){
@@ -133,7 +145,7 @@
           key = event.clientX-rect.left;
           acc = 0;
           wmC = 208;
-          probeaccrange = 35;
+          probeaccrange = 25;
           offset_probe = 195;
           correctmin = (((255-wmC)*2)-probeaccrange)+offset_probe;
           correctmax = (((255-wmC)*2)+(probeaccrange+1))+offset_probe;
