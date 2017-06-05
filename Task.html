@@ -24,9 +24,9 @@ $(document).ready(function(){
     var stimscreencount = 0;
     var area = 6000;
     var WMinterval = 500;
-    var preWMstimbuffer = 250
+    var preWMstimbuffer = 500
     var coloraveragingpresentationtime = 500;
-    var probeaccrange = 30;//the deviation (in number of colors, from 256 possible colors) from actual color on the probe trials you are willing to accept as correct
+    var probeaccrange = 20;//the deviation (in number of colors, from 256 possible colors) from actual color on the probe trials you are willing to accept as correct
     var numberofblocks = 5;
     var blocklength = 128;
     var instructionson = 0;
@@ -479,7 +479,7 @@ $(document).ready(function(){
   	{
   		var w = window.innerWidth;
   		var h = window.innerHeight;
-  		if (w < 1500 || h < 1000) // 800 by 600 is the lowest resolution on my laptop; seems like a good "minimum" (basically need 500 x 500 at least)
+  		if (w < 900 || h < 900) // 800 by 600 is the lowest resolution on my laptop; seems like a good "minimum" (basically need 500 x 500 at least)
           {
   			checkwindowsize = 1;
   		}
