@@ -25,7 +25,7 @@ $(document).ready(function(){
     var WMinterval = 500;
     var preWMstimbuffer = 500
     var coloraveragingpresentationtime = 500;
-    var probeaccrange = 20;//the deviation (in number of colors, from 256 possible colors) from actual color on the probe trials you are willing to accept as correct
+    var probeaccrange = 10;//the deviation (in number of colors, from 256 possible colors) from actual color on the probe trials you are willing to accept as correct
     var numberofblocks = 4;
     var blocklength = 8;
     var instructionson = 0;
@@ -413,7 +413,7 @@ $(document).ready(function(){
         ctx.fillStyle="black";
         ctx.textBaseline="middle";
         ctx.textAlign="center";
-        ctx.fillText("*",myCanvas.width/2,myCanvas.height/2);
+        ctx.fillText("*",myCanvas.width/2,(myCanvas.height/2)+9);
         if (acc == 1 & stimscreencount == 2){
           ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
           ctx.clearRect(-450, -450, myCanvas.width, myCanvas.height);
@@ -463,7 +463,7 @@ $(document).ready(function(){
         ctx.textAlign="center";
         if (notfullscreen == 0){
         ctx.fillText("Your screen is not full screen.",myCanvas.width/2,myCanvas.height/2);
-        ctx.fillText("Please correct this and press any button to continue.",myCanvas.width/2,(myCanvas.height/2)+50);
+        ctx.fillText("Please correct this and press any key to continue.",myCanvas.width/2,(myCanvas.height/2)+50);
         ctx.fillText("If you exit full screen one more time during this experiment,",myCanvas.width/2,(myCanvas.height/2)+100);
         ctx.fillText("you will have to restart the experiment and will not be paid",myCanvas.width/2,(myCanvas.height/2)+150);
         ctx.fillText("for the previous time you have spent doing the experiment.",myCanvas.width/2,(myCanvas.height/2)+200);
@@ -479,7 +479,7 @@ $(document).ready(function(){
     	{
     		var w = window.innerWidth;
     		var h = window.innerHeight;
-    		if (w < 900 || h < 900) // 800 by 600 is the lowest resolution on my laptop; seems like a good "minimum" (basically need 500 x 500 at least)
+    		if (w < 800 || h < 600) // 800 by 600 is the lowest resolution on my laptop; seems like a good "minimum" (basically need 500 x 500 at least)
             {
     			checkwindowsize = 1;
     		}
