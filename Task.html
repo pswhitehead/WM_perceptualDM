@@ -272,6 +272,8 @@ $(document).ready(function(){
 
   //Draw WM screens
     function drawWMstim(){
+      onset = d1.getTime() - runStart;
+      d1 = new Date();
       type = 1;
       $("#startButton").hide();
       ctx.clearRect(-450, -450, myCanvas.width, myCanvas.height);
@@ -284,6 +286,8 @@ $(document).ready(function(){
 
   //Draw perceptual Decision Making screens
     function drawpDMstim(){
+      onset = d1.getTime() - runStart;
+      d1 = new Date();
       type = 2;
       timoutonoff = 0;
       $("#startButton").hide();
@@ -307,6 +311,8 @@ $(document).ready(function(){
 
   //Draw WM probe screens
     function drawWMprobe(){
+      onset = d1.getTime() - runStart;
+      d1 = new Date();
       type = 5;
       drawcorrectanswercounter = 0;
       document.getElementById("myCanvas").style.cursor = "pointer";
@@ -329,11 +335,10 @@ $(document).ready(function(){
           ctx.strokeStyle = col;
           ctx.stroke();
       }
-      ITIinterval = 750;
     };
 
     function drawcorrectanswer(){
-      type = 5;
+      type = 0;
       drawcorrectanswercounter++;
       document.getElementById("myCanvas").style.cursor = "pointer";
       offset_probe = 195;
@@ -721,7 +726,7 @@ $(document).ready(function(){
               <input type="hidden" id="workerId" name="workerId" value="">
               <input type="hidden" id="hitId" name="hitId" value="">
               <input type="hidden" id="RTs" name="RTs" value="">
-              <input type="hidden" id="ExpName" name="ExpName" value="NEXT">
+              <input type="hidden" id="ExpName" name="ExpName" value="pWM">
               <p style="font-family: Arial; color: black; font-size:24px">Click button to submit</p>
               <input id="submitButton" type="submit" name="Finish" value="Submit">
             </td>
