@@ -272,8 +272,6 @@ $(document).ready(function(){
 
   //Draw WM screens
     function drawWMstim(){
-      onset = d1.getTime() - runStart;
-      d1 = new Date();
       type = 1;
       $("#startButton").hide();
       ctx.clearRect(-450, -450, myCanvas.width, myCanvas.height);
@@ -286,8 +284,8 @@ $(document).ready(function(){
 
   //Draw perceptual Decision Making screens
     function drawpDMstim(){
-      onset = d1.getTime() - runStart;
       d1 = new Date();
+      onset = d1.getTime() - runStart;
       type = 2;
       timoutonoff = 0;
       $("#startButton").hide();
@@ -311,8 +309,8 @@ $(document).ready(function(){
 
   //Draw WM probe screens
     function drawWMprobe(){
-      onset = d1.getTime() - runStart;
       d1 = new Date();
+      onset = d1.getTime() - runStart;
       type = 5;
       drawcorrectanswercounter = 0;
       document.getElementById("myCanvas").style.cursor = "pointer";
