@@ -183,11 +183,11 @@ $(document).ready(function(){
     //};
 
   //standard deviation color parameters
-    var sdccondition = 2*(256);
+    var sdccondition = 256;
     var sdcscaling = .0666;
 
     function sdcolor(conditionaddsd){
-    standarddeviationcolor = ((2+conditionaddsd)*(255)) * sdcscaling;
+    standarddeviationcolor = ((3+conditionaddsd)*(sdccondition)) * sdcscaling;
     };
 
     //standard deviation shape parameters
@@ -594,7 +594,9 @@ $(document).ready(function(){
         pdmC6 = Math.round(sample[6]);
         pdmC7 = Math.round(sample[7]);
 
-      };
+        arraymean = (pdmC7+pdmC6+pdmC5+pdmC4+pdmC3+pdmC2+pdmC1+pdmC0)/8;
+
+        };
 
   //runTrial
     function runTrial(){
@@ -639,24 +641,24 @@ $(document).ready(function(){
         else if (type == 1) {clearTimeout(timeout); timeout = setTimeout(showITI,WMinterval);}
         else if (type == 2) {
           if (responsebutton[0] == 0){
-              if (trialmatrix[random[i]][0] == -1){
+              if (arraymean <= 127){
                 if (key == "s" || key == "S"){acc=1;acccount++;}
                 }
-              if (trialmatrix[random[i]][0] == 1){
+              if (arraymean > 127){
                 if (key == "a" || key == "A"){acc=1;acccount++;}
                 }
               }
           else if (responsebutton[0] == 1){
-            if (trialmatrix[random[i]][0] == -1){
+            if (arraymean > 127){
               if (key == "a" || key == "A"){acc=1;acccount++;}
               }
-            if (trialmatrix[random[i]][0] == 1){
+            if (arraymean <= 127){
               if (key == "s" || key == "S"){acc=1;acccount++;}
               }
             };
 
           if(key == "s" || key == "S" || key == "a" || key == "A"){
-          data[logCounter] = ["NR:", block, Ronset, key, respTime, acc, trialmatrix[random[i]][0], trialmatrix[random[i]][1], trialmatrix[random[i]][2], trialmatrix[random[i]][3], wmC, pdmC0, pdmC1, pdmC2, pdmC3, pdmC4, pdmC5, pdmC6, pdmC7];
+          data[logCounter] = ["NR:", block, Ronset, key, respTime, acc, trialmatrix[random[i]][0], trialmatrix[random[i]][1], trialmatrix[random[i]][2], trialmatrix[random[i]][3], arraymean, wmC, pdmC0, pdmC1, pdmC2, pdmC3, pdmC4, pdmC5, pdmC6, pdmC7];
           logCounter++; acctotalcount++; stimscreencount++; clearTimeout(timeoutDMstim); showITI();
           }
           else {wrongbuttonpress()}
@@ -689,7 +691,7 @@ $(document).ready(function(){
           else if (wmC < probeaccrange){correctmin = offset_probe+(256*2)-(probeaccrange*2); correctmax = offset_probe+(256*2)}
 
           if (key >= correctmin & key <= correctmax) {acc=1;acccount++;}
-            data[logCounter] = ["NR:", block, Ronset, key, respTime, acc, trialmatrix[random[i]][0], trialmatrix[random[i]][1], trialmatrix[random[i]][2], trialmatrix[random[i]][3], wmC, pdmC0, pdmC1, pdmC2, pdmC3, pdmC4, pdmC5, pdmC6, pdmC7];
+            data[logCounter] = ["NR:", block, Ronset, key, respTime, acc, trialmatrix[random[i]][0], trialmatrix[random[i]][1], trialmatrix[random[i]][2], trialmatrix[random[i]][3], arraymean, wmC, pdmC0, pdmC1, pdmC2, pdmC3, pdmC4, pdmC5, pdmC6, pdmC7];
             logCounter++; acctotalcount++; stimscreencount++; document.getElementById("myCanvas").style.cursor = "none"; drawcorrectanswercounter++; drawcorrectanswer();
             }
         if (type == 6) {jokes++;}
