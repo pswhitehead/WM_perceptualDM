@@ -577,12 +577,37 @@ $(document).ready(function(){
       mcolor((trialmatrix[random[i]][0] * 255), trialmatrix[random[i]][1]);
       sdcolor(trialmatrix[random[i]][2]);
       distribution = gaussian(meancolor, standarddeviationcolor);
-      sample = [distribution(Math.floor(Math.random() * (255 - 0)) + 0),distribution(Math.floor(Math.random() * (255 - 0)) + 0),distribution(Math.floor(Math.random() * (255 - 0)) + 0),
-                distribution(Math.floor(Math.random() * (255 - 0)) + 0),distribution(Math.floor(Math.random() * (255 - 0)) + 0),distribution(Math.floor(Math.random() * (255 - 0)) + 0),
-                distribution(Math.floor(Math.random() * (255 - 0)) + 0),distribution(Math.floor(Math.random() * (255 - 0)) + 0)]
+      samplemeanrangemax = meancolor+1
+      samplemeanrangemin = meancolor-1
+      samplesdrangemax = standarddeviationcolor+1
+      samplesdrangemin = standarddeviationcolor-1
+      samplecheck = 0
 
       wmC = wmCvalues[wmCcounter]
-      checkarray(sample)
+      while (samplecheck < 1){
+        sample = [distribution(Math.floor(Math.random() * (255 - 0)) + 0),distribution(Math.floor(Math.random() * (255 - 0)) + 0),distribution(Math.floor(Math.random() * (255 - 0)) + 0),
+                  distribution(Math.floor(Math.random() * (255 - 0)) + 0),distribution(Math.floor(Math.random() * (255 - 0)) + 0),distribution(Math.floor(Math.random() * (255 - 0)) + 0),
+                  distribution(Math.floor(Math.random() * (255 - 0)) + 0),distribution(Math.floor(Math.random() * (255 - 0)) + 0)]
+        samplemeancheck = math.mean(sample)
+        samplesdcheck = math.std(sample)
+
+        sample.sort();
+        valueadd = 1;
+        repeatcheck = 0
+        for (aa=0; aa<sample.length; aa++){
+          if (aa < (sample.length)-1){valueadd = -1;}
+          if(Math.round(sample[aa])>255 || Math.round(sample[aa])<0
+              || Math.round(sample[aa]==sample[aa+valueadd]) || Math.round(sample[aa]==wmC)){
+                repeatcheck++;
+              }
+            }
+
+
+        if ((samplemeancheck > samplemeanrangemin & samplemeancheck < samplemeanrangemax) &
+            (samplesdcheck > samplesdrangemin & samplesdcheck < samplesdrangemax) &
+            repeatcheck == 0){samplecheck = 1}
+        }
+      //checkarray(sample)
       shuffle(sample)
 
         pdmC0 = Math.round(sample[0]);
@@ -594,7 +619,8 @@ $(document).ready(function(){
         pdmC6 = Math.round(sample[6]);
         pdmC7 = Math.round(sample[7]);
 
-        arraymean = (pdmC7+pdmC6+pdmC5+pdmC4+pdmC3+pdmC2+pdmC1+pdmC0)/8;
+        arraymean = math.mean([pdmC7, pdmC6, pdmC5, pdmC4, pdmC3, pdmC2, pdmC1, pdmC0]);
+        arraystd = math.std([pdmC7, pdmC6, pdmC5, pdmC4, pdmC3, pdmC2, pdmC1, pdmC0]);
 
         };
 
@@ -641,24 +667,24 @@ $(document).ready(function(){
         else if (type == 1) {clearTimeout(timeout); timeout = setTimeout(showITI,WMinterval);}
         else if (type == 2) {
           if (responsebutton[0] == 0){
-              if (arraymean <= 127){
+              if (trialmatrix[random[i]][0] == -1){
                 if (key == "s" || key == "S"){acc=1;acccount++;}
                 }
-              if (arraymean > 127){
+              if (trialmatrix[random[i]][0] == 1){
                 if (key == "a" || key == "A"){acc=1;acccount++;}
                 }
               }
           else if (responsebutton[0] == 1){
-            if (arraymean > 127){
+            if (trialmatrix[random[i]][0] == -1){
               if (key == "a" || key == "A"){acc=1;acccount++;}
               }
-            if (arraymean <= 127){
+            if (trialmatrix[random[i]][0] == 1){
               if (key == "s" || key == "S"){acc=1;acccount++;}
               }
             };
 
           if(key == "s" || key == "S" || key == "a" || key == "A"){
-          data[logCounter] = ["NR:", block, Ronset, key, respTime, acc, trialmatrix[random[i]][0], trialmatrix[random[i]][1], trialmatrix[random[i]][2], trialmatrix[random[i]][3], arraymean, wmC, pdmC0, pdmC1, pdmC2, pdmC3, pdmC4, pdmC5, pdmC6, pdmC7];
+          data[logCounter] = ["NR:", block, Ronset, key, respTime, acc, trialmatrix[random[i]][0], trialmatrix[random[i]][1], trialmatrix[random[i]][2], trialmatrix[random[i]][3], arraymean, arraystd, wmC, pdmC0, pdmC1, pdmC2, pdmC3, pdmC4, pdmC5, pdmC6, pdmC7];
           logCounter++; acctotalcount++; stimscreencount++; clearTimeout(timeoutDMstim); showITI();
           }
           else {wrongbuttonpress()}
@@ -691,7 +717,7 @@ $(document).ready(function(){
           else if (wmC < probeaccrange){correctmin = offset_probe+(256*2)-(probeaccrange*2); correctmax = offset_probe+(256*2)}
 
           if (key >= correctmin & key <= correctmax) {acc=1;acccount++;}
-            data[logCounter] = ["NR:", block, Ronset, key, respTime, acc, trialmatrix[random[i]][0], trialmatrix[random[i]][1], trialmatrix[random[i]][2], trialmatrix[random[i]][3], arraymean, wmC, pdmC0, pdmC1, pdmC2, pdmC3, pdmC4, pdmC5, pdmC6, pdmC7];
+            data[logCounter] = ["NR:", block, Ronset, key, respTime, acc, trialmatrix[random[i]][0], trialmatrix[random[i]][1], trialmatrix[random[i]][2], trialmatrix[random[i]][3], arraymean, arraystd, wmC, pdmC0, pdmC1, pdmC2, pdmC3, pdmC4, pdmC5, pdmC6, pdmC7];
             logCounter++; acctotalcount++; stimscreencount++; document.getElementById("myCanvas").style.cursor = "none"; drawcorrectanswercounter++; drawcorrectanswer();
             }
         if (type == 6) {jokes++;}
