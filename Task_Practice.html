@@ -6,7 +6,7 @@
   <script type="text/javascript" src="math.js"></script>
   <script type="text/javascript">
 
-  
+
   $(document).ready(function(){
 
     var c = document.getElementById("myCanvas");
@@ -26,8 +26,8 @@
     var preWMstimbuffer = 500
     var coloraveragingpresentationtime = 500;
     var probeaccrange = 10;//the deviation (in number of colors, from 256 possible colors) from actual color on the probe trials you are willing to accept as correct
-    var numberofblocks = 5;
-    var blocklength = 128;
+    var numberofblocks = 4;
+    var blocklength = 8;
     var instructionson = 0;
     var block = 0;
     wmCcounter = 0;
@@ -165,7 +165,7 @@
       //mean color parameters for trials
       var mcref = (256/2);
       var mccategory = 255;
-      var mccondition = 0.66;
+      var mccondition = 1;
       var mcscaling = .0666;
 
       function mcolor(mccategory, conditionaddm){
@@ -187,7 +187,7 @@
       var sdcscaling = .0666;
 
       function sdcolor(conditionaddsd){
-        standarddeviationcolor = ((4+conditionaddsd)*(sdccondition)) * sdcscaling;
+        standarddeviationcolor = ((3+conditionaddsd)*(sdccondition)) * sdcscaling;
       };
 
       //standard deviation shape parameters

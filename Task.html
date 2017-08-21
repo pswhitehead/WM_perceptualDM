@@ -63,23 +63,23 @@
     //4th element = probe/pDM screen (0 = perceptual decision, 1 = probe)
     var type1 = [[1,0,0,0]]
     var type2 = [[1,1,0,0]]
-    var type3 = [[1,1,1,0]]
-    var type4 = [[1,0,1,0]]
+    var type3 = [[1,1,2,0]]
+    var type4 = [[1,0,2,0]]
 
     var type5 = [[1,0,0,1]]
     var type6 = [[1,1,0,1]]
-    var type7 = [[1,1,1,1]]
-    var type8 = [[1,0,1,1]]
+    var type7 = [[1,1,2,1]]
+    var type8 = [[1,0,2,1]]
 
     var type9 = [[-1,0,0,0]]
     var type10 = [[-1,1,0,0]]
-    var type11 = [[-1,1,1,0]]
-    var type12 = [[-1,0,1,0]]
+    var type11 = [[-1,1,2,0]]
+    var type12 = [[-1,0,2,0]]
 
     var type13 = [[-1,0,0,1]]
     var type14 = [[-1,1,0,1]]
-    var type15 = [[-1,1,1,1]]
-    var type16 = [[-1,0,1,1]]
+    var type15 = [[-1,1,2,1]]
+    var type16 = [[-1,0,2,1]]
 
     trialmatrix = [];
     for (var arraymaker=0; arraymaker<(blocklength/32); arraymaker++){
@@ -166,7 +166,7 @@
       //mean color parameters for trials
       var mcref = (256/2);
       var mccategory = 255;
-      var mccondition = 0.66;
+      var mccondition = 1;
       var mcscaling = .0666;
 
       function mcolor(mccategory, conditionaddm){
@@ -188,7 +188,7 @@
       var sdcscaling = .0666;
 
       function sdcolor(conditionaddsd){
-        standarddeviationcolor = ((4+conditionaddsd)*(sdccondition)) * sdcscaling;
+        standarddeviationcolor = ((3+conditionaddsd)*(sdccondition)) * sdcscaling;
       };
 
       //standard deviation shape parameters
@@ -307,7 +307,7 @@ function drawWMstim(){
     };
     drawstimscreenDM()
     ITIinterval = 1000;
-    timeoutDMstim = setTimeout(showITI, 1500);
+    timeoutDMstim = setTimeout(showITI, 1250);
   };
 
   //Draw WM probe screens
