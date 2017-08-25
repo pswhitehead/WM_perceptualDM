@@ -30,6 +30,7 @@
     var numberofblocks = 5;
     var blocklength = 128;
     var instructionson = 0;
+    var decisionmakingtimeout = 1800;
     var block = 0;
     wmCcounter = 0;
     i=0;
@@ -63,23 +64,23 @@
     //4th element = probe/pDM screen (0 = perceptual decision, 1 = probe)
     var type1 = [[1,0,0,0]]
     var type2 = [[1,1,0,0]]
-    var type3 = [[1,1,2,0]]
-    var type4 = [[1,0,2,0]]
+    var type3 = [[1,1,1,0]]
+    var type4 = [[1,0,1,0]]
 
     var type5 = [[1,0,0,1]]
     var type6 = [[1,1,0,1]]
-    var type7 = [[1,1,2,1]]
-    var type8 = [[1,0,2,1]]
+    var type7 = [[1,1,1,1]]
+    var type8 = [[1,0,1,1]]
 
     var type9 = [[-1,0,0,0]]
     var type10 = [[-1,1,0,0]]
-    var type11 = [[-1,1,2,0]]
-    var type12 = [[-1,0,2,0]]
+    var type11 = [[-1,1,1,0]]
+    var type12 = [[-1,0,1,0]]
 
     var type13 = [[-1,0,0,1]]
     var type14 = [[-1,1,0,1]]
-    var type15 = [[-1,1,2,1]]
-    var type16 = [[-1,0,2,1]]
+    var type15 = [[-1,1,1,1]]
+    var type16 = [[-1,0,1,1]]
 
     trialmatrix = [];
     for (var arraymaker=0; arraymaker<(blocklength/32); arraymaker++){
@@ -188,7 +189,7 @@
       var sdcscaling = .0666;
 
       function sdcolor(conditionaddsd){
-        standarddeviationcolor = ((3+conditionaddsd)*(sdccondition)) * sdcscaling;
+        standarddeviationcolor = ((3.3+conditionaddsd)*(sdccondition)) * sdcscaling;
       };
 
       //standard deviation shape parameters
@@ -208,68 +209,54 @@
         ctx.moveTo(900, 900);
         ctx.beginPath();
 
-        //color options
-        /*if (color == 1) {
-        col = "red"
-      }
-      if (color == 2) {
-      col = "blue"
+        col = 'rgb('+color+','+0+','+(255-color)+')';
+
+        //sets up the area and the n (ie. able to vary n to make more square or circle)
+        var n = degree;
+
+        //this is the function for area of a squircle solved for the semi-diameter a
+        var a1 = (Math.pow((math.gamma(1 + (1 / n))), (2)));
+        var a2 = ((math.gamma(1 + (2 / n))));
+        var a3 = 4;
+        var a = Math.pow(((a3 * (a1 / a2)) / area), (1 / (-2)));
+        //a=50;
+        //loop for parametric equations
+        for (theta = 0; theta < 360; theta++) {
+
+          //makes the x and y parameters for the squircle
+          var x = a *
+          (Math.pow((Math.abs(Math.cos(((Math.PI / 180) * (theta))))), (2 / n)));
+          if ((Math.cos((Math.PI / 180) * (theta))) < 0) {
+            x = -1 * x
+          };
+          if ((Math.cos((Math.PI / 180) * (theta))) == 0) {
+            x = 0 * x
+          };
+
+          var y = a *
+          (Math.pow((Math.abs(Math.sin(((Math.PI / 180) * (theta))))), (2 / n)));
+          if ((Math.sin((Math.PI / 180) * (theta))) < 0) {
+            y = -1 * y
+          };
+          if ((Math.sin((Math.PI / 180) * (theta))) == 0) {
+            y = 0 * y
+          };
+
+          //plots
+
+      ctx.lineTo((x + locx), (y + locy));
+
     }
-    if (color == 3) {
-    col = "green"
-  }
-  if (color == 4) {
-  col = "yellow"
-}*/
+    ctx.closePath();
+    //ctx.rotate(315*(Math.PI/180));
 
-col = 'rgb('+color+','+0+','+(255-color)+')';
-
-//sets up the area and the n (ie. able to vary n to make more square or circle)
-var n = degree;
-
-//this is the function for area of a squircle solved for the semi-diameter a
-var a1 = (Math.pow((math.gamma(1 + (1 / n))), (2)));
-var a2 = ((math.gamma(1 + (2 / n))));
-var a3 = 4;
-var a = Math.pow(((a3 * (a1 / a2)) / area), (1 / (-2)));
-//a=50;
-//loop for parametric equations
-for (theta = 0; theta < 360; theta++) {
-
-  //makes the x and y parameters for the squircle
-  var x = a *
-  (Math.pow((Math.abs(Math.cos(((Math.PI / 180) * (theta))))), (2 / n)));
-  if ((Math.cos((Math.PI / 180) * (theta))) < 0) {
-    x = -1 * x
-  };
-  if ((Math.cos((Math.PI / 180) * (theta))) == 0) {
-    x = 0 * x
-  };
-
-  var y = a *
-  (Math.pow((Math.abs(Math.sin(((Math.PI / 180) * (theta))))), (2 / n)));
-  if ((Math.sin((Math.PI / 180) * (theta))) < 0) {
-    y = -1 * y
-  };
-  if ((Math.sin((Math.PI / 180) * (theta))) == 0) {
-    y = 0 * y
-  };
-
-  //plots
-
-  ctx.lineTo((x + locx), (y + locy));
-
-}
-ctx.closePath();
-//ctx.rotate(315*(Math.PI/180));
-
-//fills with color
-ctx.fillStyle = col;
-ctx.fill();
-//ctx.lineWidth = 10;
-//ctx.strokeStyle = 'rgb('+color+','+0+','+(255-color)+')';;
-//ctx.stroke();
-};
+    //fills with color
+    ctx.fillStyle = col;
+    ctx.fill();
+    //ctx.lineWidth = 10;
+    //ctx.strokeStyle = 'rgb('+color+','+0+','+(255-color)+')';;
+    //ctx.stroke();
+    };
 
 //Draw WM screens
 function drawWMstim(){
@@ -307,7 +294,7 @@ function drawWMstim(){
     };
     drawstimscreenDM()
     ITIinterval = 1000;
-    timeoutDMstim = setTimeout(showITI, 1500);
+    timeoutDMstim = setTimeout(showITI, decisionmakingtimeout);
   };
 
   //Draw WM probe screens
@@ -430,7 +417,7 @@ function drawWMstim(){
       acctotalcount++; stimscreencount=2;
       ctx.fillText("Respond Faster",myCanvas.width/2,myCanvas.height/2);
     }
-    else if (acc == 1 & stimscreencount == 2 & keyonoff != 1){
+    else if (acc == 1 & stimscreencount == 2 & keyonoff != 1 & block < 1){
       ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
       ctx.clearRect(-450, -450, myCanvas.width, myCanvas.height);
       ctx.font="bold 50px Arial";
@@ -439,7 +426,7 @@ function drawWMstim(){
       ctx.textAlign="center";
       ctx.fillText("Correct",myCanvas.width/2,myCanvas.height/2);
     }
-    else if (acc == 0 & stimscreencount == 2 & keyonoff != 1){
+    else if (acc == 0 & stimscreencount == 2 & keyonoff != 1 & block < 1){
       ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
       ctx.clearRect(-450, -450, myCanvas.width, myCanvas.height);
       ctx.font="bold 50px Arial";
@@ -550,7 +537,7 @@ function instructions(){
     ctx.fillText("  If it is more red, press " +button1, (0.0), (myCanvas.height/2)+150);
     ctx.fillText("  If it is more blue, press " +button2, (0.0), (myCanvas.height/2)+200);
     ctx.textAlign="center";
-    ctx.fillText("Press any button to begin the task.", (myCanvas.width/2), (myCanvas.height/2)+300);
+    ctx.fillText("Press any button to begin the task.", (myCanvas.width/2), (myCanvas.height/2)+280);
 
   }
 
@@ -566,7 +553,8 @@ function instructions(){
     ctx.fillText("  If it is more red, press " +button1, (0.0), (myCanvas.height/2)+150);
     ctx.fillText("  If it is more blue, press " +button2, (0.0), (myCanvas.height/2)+200);
     ctx.textAlign="center";
-    ctx.fillText("Press any button to begin the task.", (myCanvas.width/2), (myCanvas.height/2)+300);
+    ctx.fillText("Press any button to begin the task.", (myCanvas.width/2), (myCanvas.height/2)+280);
+    ctx.fillText("You will not be given accuracy feedback this block.", (myCanvas.width/2), (myCanvas.height/2)+330);
     block++;
   }
 };
