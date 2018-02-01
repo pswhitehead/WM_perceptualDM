@@ -12,7 +12,7 @@ body{
 	margin:0;
 	padding:0;
 	border:0;
-	background-color: black;
+	background-color: #BEBEBE;
 }
 
 table{
@@ -27,5 +27,5 @@ table{
 
 .slider-width100
 {
-    width: 5000px;
+	width:400px;
 }

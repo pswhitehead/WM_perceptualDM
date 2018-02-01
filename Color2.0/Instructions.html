@@ -39,7 +39,7 @@
       ctx.globalAlpha = 0.65
       ctx.fill();
 
-      ctx.fillStyle="white";
+      ctx.fillStyle="black";
       ctx.globalAlpha = 1;
       ctx.fillText("__________________________________________", (myCanvas.width/2), (myCanvas.height/2)+310);
       ctx.fillText("A grey box like the one above will always indicate", (myCanvas.width/2), (myCanvas.height/2)+250);
@@ -56,7 +56,7 @@
       if (i == 0){
         ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
         ctx.font="25px Arial";
-        ctx.fillStyle="white";
+        ctx.fillStyle="black";
         ctx.textBaseline="left";
         ctx.textAlign="left";
         ctx.fillText("Today you will be completing a simple task.", (myCanvas.width)-900, (myCanvas.height/2)-320);
@@ -85,7 +85,7 @@
 
         ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
         ctx.font="25px Arial";
-        ctx.fillStyle="white";
+        ctx.fillStyle="black";
         ctx.textBaseline="middle";
         ctx.textAlign="center";
         ctx.fillText("Below is an example of the initial colored circle.", (myCanvas.width/2), (myCanvas.height/2)-300);
@@ -95,7 +95,7 @@
         ctx.arc((myCanvas.width/2), (myCanvas.height/2), 50, 0, 2 * Math.PI);
         ctx.fillStyle = "rgb(208,0,47)";
         ctx.fill();
-        ctx.fillStyle="white";
+        ctx.fillStyle="black";
         ctx.fillText("__________________________________________", (myCanvas.width/2), (myCanvas.height/2)+260);
         ctx.fillText("Use the buttons below to see the next instructions or go back", (myCanvas.width/2), (myCanvas.height/2)+300);
         ctx.fillText("to the previous instructions.", (myCanvas.width/2), (myCanvas.height/2)+350);
@@ -106,7 +106,7 @@
 
         ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
         ctx.font="25px Arial";
-        ctx.fillStyle="white";
+        ctx.fillStyle="black";
         ctx.textBaseline="middle";
         ctx.textAlign="center";
         ctx.fillText("Below is an example of the color spectrum.", (myCanvas.width/2), (myCanvas.height/2)-370);
@@ -133,7 +133,7 @@
             ctx.strokeStyle = col;
             ctx.stroke();
         }
-        ctx.fillStyle="white";
+        ctx.fillStyle="black";
         ctx.fillText("__________________________________________", (myCanvas.width/2), (myCanvas.height/2)+260);
         ctx.fillText("Use the buttons below to see the next instructions or go back", (myCanvas.width/2), (myCanvas.height/2)+300);
         ctx.fillText("to the previous instructions.", (myCanvas.width/2), (myCanvas.height/2)+350);
@@ -161,7 +161,7 @@
 
       ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
       ctx.font="25px Arial";
-      ctx.fillStyle="white";
+      ctx.fillStyle="black";
       ctx.textBaseline="middle";
       ctx.textAlign="center";
       ctx.fillText("Below is an example of the 8 colored circles.", (myCanvas.width/2), (myCanvas.height/2)-350);
@@ -210,7 +210,7 @@
       ctx.fill();
 
 
-      ctx.fillStyle="white";
+      ctx.fillStyle="black";
       ctx.fillText("The correct answer would be to press the A key to indicate RED.", (myCanvas.width/2), (myCanvas.height/2)+260);
       ctx.fillText("__________________________________________", (myCanvas.width/2), (myCanvas.height/2)+310);
       ctx.fillText("Use the buttons below to see the next instructions or go back", (myCanvas.width/2), (myCanvas.height/2)+350);
@@ -221,7 +221,7 @@
 
       ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
       ctx.font="30px Arial";
-      ctx.fillStyle="white";
+      ctx.fillStyle="black";
       ctx.textBaseline="middle";
       ctx.textAlign="center";
       ctx.fillText("To try a practice session, press 'Continue'", (myCanvas.width/2), (myCanvas.height/2));
@@ -263,8 +263,8 @@ $("#backButton").click(function(){i--; runTrial();});
                     <input type="hidden" id="workerId" name="workerId" value="">
                     <input type="hidden" id="hitId" name="hitId" value="">
                     <input type="hidden" id="RTs" name="RTs" value="">
-                    <input type="hidden" id="ExpName" name="ExpName" value="pWM">
-                    <p style="font-family: Arial; color: white; font-size:24px"></p>
+                    <input type="hidden" id="ExpName" name="ExpName" value="NEXT">
+                    <p style="font-family: Arial; color: black; font-size:24px"></p>
                   </td>
                 </tr>
               </table>

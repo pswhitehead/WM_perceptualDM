@@ -163,7 +163,7 @@
       var xcoordinate7 = r * Math.cos((Math.PI / 180) * (315+offset));
 
       //mean color parameters for trials
-      var mcref = (255/2);
+      var mcref = (256/2);
       var mccategory = 255;
       var mccondition = 1;
       var mcscaling = .0666;
@@ -187,7 +187,7 @@
       var sdcscaling = .0666;
 
       function sdcolor(conditionaddsd){
-        standarddeviationcolor = ((5+conditionaddsd)*(sdccondition)) * sdcscaling;
+        standarddeviationcolor = ((3+conditionaddsd)*(sdccondition)) * sdcscaling;
       };
 
       //standard deviation shape parameters

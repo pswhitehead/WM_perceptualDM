@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8"/>
   <link rel="stylesheet" href="Task.css" type="text/css" charset="utf-8">
   <script type="text/javascript" src="jquery-3.2.1.js"></script>
   <script type="text/javascript" src="math.js"></script>
@@ -11,6 +12,7 @@
 
     var c = document.getElementById("myCanvas");
     var ctx = c.getContext("2d");
+    document.getElementById("myCanvas").style.cursor = "none";
     ctx.rotate(45 * Math.PI / 180);
     ctx.translate(Math.sqrt(2*(450*450)),0);
 
@@ -24,12 +26,14 @@
     var area = 6000;
     var WMinterval = 500;
     var preWMstimbuffer = 500
-    var coloraveragingpresentationtime = 500;
+    var coloraveragingpresentationtime = 200;
     var probeaccrange = 10;//the deviation (in number of colors, from 256 possible colors) from actual color on the probe trials you are willing to accept as correct
-    var numberofblocks = 4;
-    var blocklength = 8;
+    var numberofblocks = 5;
+    var blocklength = 128;
     var instructionson = 0;
+    var decisionmakingtimeout = 1800;
     var block = 0;
+    var acc
     wmCcounter = 0;
     i=0;
     acccount = 0;
@@ -187,7 +191,7 @@
       var sdcscaling = .0666;
 
       function sdcolor(conditionaddsd){
-        standarddeviationcolor = ((5+conditionaddsd)*(sdccondition)) * sdcscaling;
+        standarddeviationcolor = ((3.25+conditionaddsd)*(sdccondition)) * sdcscaling;
       };
 
       //standard deviation shape parameters
@@ -207,78 +211,72 @@
         ctx.moveTo(900, 900);
         ctx.beginPath();
 
-        //color options
-        /*if (color == 1) {
-        col = "red"
-      }
-      if (color == 2) {
-      col = "blue"
+        col = color
+
+        //sets up the area and the n (ie. able to vary n to make more square or circle)
+        var n = degree;
+
+        //this is the function for area of a squircle solved for the semi-diameter a
+        var a1 = (Math.pow((math.gamma(1 + (1 / n))), (2)));
+        var a2 = ((math.gamma(1 + (2 / n))));
+        var a3 = 4;
+        var a = Math.pow(((a3 * (a1 / a2)) / area), (1 / (-2)));
+        //a=50;
+        //loop for parametric equations
+        for (theta = 0; theta < 360; theta++) {
+
+          //makes the x and y parameters for the squircle
+          var x = a *
+          (Math.pow((Math.abs(Math.cos(((Math.PI / 180) * (theta))))), (2 / n)));
+          if ((Math.cos((Math.PI / 180) * (theta))) < 0) {
+            x = -1 * x
+          };
+          if ((Math.cos((Math.PI / 180) * (theta))) == 0) {
+            x = 0 * x
+          };
+
+          var y = a *
+          (Math.pow((Math.abs(Math.sin(((Math.PI / 180) * (theta))))), (2 / n)));
+          if ((Math.sin((Math.PI / 180) * (theta))) < 0) {
+            y = -1 * y
+          };
+          if ((Math.sin((Math.PI / 180) * (theta))) == 0) {
+            y = 0 * y
+          };
+
+          //plots
+
+      ctx.lineTo((x + locx), (y + locy));
+
     }
-    if (color == 3) {
-    col = "green"
-  }
-  if (color == 4) {
-  col = "yellow"
-}*/
+    ctx.closePath();
+    //ctx.rotate(315*(Math.PI/180));
 
-col = 'rgb('+color+','+0+','+(255-color)+')';
-
-//sets up the area and the n (ie. able to vary n to make more square or circle)
-var n = degree;
-
-//this is the function for area of a squircle solved for the semi-diameter a
-var a1 = (Math.pow((math.gamma(1 + (1 / n))), (2)));
-var a2 = ((math.gamma(1 + (2 / n))));
-var a3 = 4;
-var a = Math.pow(((a3 * (a1 / a2)) / area), (1 / (-2)));
-//a=50;
-//loop for parametric equations
-for (theta = 0; theta < 360; theta++) {
-
-  //makes the x and y parameters for the squircle
-  var x = a *
-  (Math.pow((Math.abs(Math.cos(((Math.PI / 180) * (theta))))), (2 / n)));
-  if ((Math.cos((Math.PI / 180) * (theta))) < 0) {
-    x = -1 * x
-  };
-  if ((Math.cos((Math.PI / 180) * (theta))) == 0) {
-    x = 0 * x
-  };
-
-  var y = a *
-  (Math.pow((Math.abs(Math.sin(((Math.PI / 180) * (theta))))), (2 / n)));
-  if ((Math.sin((Math.PI / 180) * (theta))) < 0) {
-    y = -1 * y
-  };
-  if ((Math.sin((Math.PI / 180) * (theta))) == 0) {
-    y = 0 * y
-  };
-
-  //plots
-
-  ctx.lineTo((x + locx), (y + locy));
-
-}
-ctx.closePath();
-//ctx.rotate(315*(Math.PI/180));
-
-//fills with color
-ctx.fillStyle = col;
-ctx.fill();
-//ctx.lineWidth = 10;
-//ctx.strokeStyle = 'rgb('+color+','+0+','+(255-color)+')';;
-//ctx.stroke();
-};
+    //fills with color
+    ctx.fillStyle = col;
+    ctx.fill();
+    //ctx.lineWidth = 10;
+    //ctx.strokeStyle = 'rgb('+color+','+0+','+(255-color)+')';;
+    //ctx.stroke();
+    };
 
 //Draw WM screens
 function drawWMstim(){
   type = 1;
   $("#startButton").hide();
   ctx.clearRect(-450, -450, myCanvas.width, myCanvas.height);
+  ctx.rotate((-45) * Math.PI / 180);
+  ctx.translate(-450,-450);
   function clearstimscreen(){ctx.clearRect(-450, -450, myCanvas.width, myCanvas.height); timeout = setTimeout(drawWMstimscreen,preWMstimbuffer);}
-  function drawWMstimscreen(){drawsquircle(wmC, 0,0, 2);
+  function drawWMstimscreen(){
+    ctx.font="bold 50px Arial";
+    ctx.fillStyle="black";
+    ctx.textBaseline="middle";
+    ctx.textAlign="center";
+    ctx.fillText("LEFT",myCanvas.width/2,(myCanvas.height/2)+9);
     stimscreencount++; ITIinterval = 1500;
-    timeout = setTimeout(showITI,WMinterval);}
+    timeout = setTimeout(showITI,WMinterval);
+  ctx.rotate(45 * Math.PI / 180); ctx.translate(Math.sqrt(2*(450*450)),0);}
     clearstimscreen();
   };
 
@@ -292,7 +290,19 @@ function drawWMstim(){
     $("#startButton").hide();
     ctx.clearRect(-450, -450, myCanvas.width, myCanvas.height);
     function clearstimscreen(){ if (type = 2){ctx.clearRect(-450, -450, myCanvas.width, myCanvas.height);}}
-    function drawstimscreenDM(){
+    function drawstimscreenDM1(){
+      timoutonoff = 1;
+      drawsquircle('black', xcoordinate,ycoordinate, 2)
+      drawsquircle('black', xcoordinate1,ycoordinate1, 2)
+      drawsquircle('black', xcoordinate2,ycoordinate2, 2)
+      drawsquircle('black', xcoordinate3,ycoordinate3, 2)
+      drawsquircle('black', xcoordinate4,ycoordinate4, 2)
+      drawsquircle('black', xcoordinate5,ycoordinate5, 2)
+      drawsquircle('black', xcoordinate6,ycoordinate6, 2)
+      drawsquircle('black', xcoordinate7,ycoordinate7, 2)
+      timeoutDMstim = setTimeout(drawstimscreenDM2, coloraveragingpresentationtime+50);
+    };
+    function drawstimscreenDM2(){
       timoutonoff = 1;
       drawsquircle(pdmC0, xcoordinate,ycoordinate, 2)
       drawsquircle(pdmC1, xcoordinate1,ycoordinate1, 2)
@@ -302,11 +312,23 @@ function drawWMstim(){
       drawsquircle(pdmC5, xcoordinate5,ycoordinate5, 2)
       drawsquircle(pdmC6, xcoordinate6,ycoordinate6, 2)
       drawsquircle(pdmC7, xcoordinate7,ycoordinate7, 2)
-      timeoutDMstim = setTimeout(clearstimscreen, coloraveragingpresentationtime);
+      timeoutDMstim = setTimeout(drawstimscreenDM3, coloraveragingpresentationtime);
     };
-    drawstimscreenDM()
+    function drawstimscreenDM3(){
+      timoutonoff = 1;
+      drawsquircle('black', xcoordinate,ycoordinate, 2)
+      drawsquircle('black', xcoordinate1,ycoordinate1, 2)
+      drawsquircle('black', xcoordinate2,ycoordinate2, 2)
+      drawsquircle('black', xcoordinate3,ycoordinate3, 2)
+      drawsquircle('black', xcoordinate4,ycoordinate4, 2)
+      drawsquircle('black', xcoordinate5,ycoordinate5, 2)
+      drawsquircle('black', xcoordinate6,ycoordinate6, 2)
+      drawsquircle('black', xcoordinate7,ycoordinate7, 2)
+      timeoutDMstim = setTimeout(clearstimscreen, coloraveragingpresentationtime+50);
+    };
+    drawstimscreenDM1()
     ITIinterval = 1000;
-    timeoutDMstim = setTimeout(showITI, 1500);
+    timeoutDMstim = setTimeout(showITI, decisionmakingtimeout);
   };
 
   //Draw WM probe screens
@@ -429,7 +451,7 @@ function drawWMstim(){
       acctotalcount++; stimscreencount=2;
       ctx.fillText("Respond Faster",myCanvas.width/2,myCanvas.height/2);
     }
-    else if (acc == 1 & stimscreencount == 2 & keyonoff != 1){
+    else if (acc == 1 & stimscreencount == 2 & keyonoff != 1 & block == 0){
       ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
       ctx.clearRect(-450, -450, myCanvas.width, myCanvas.height);
       ctx.font="bold 50px Arial";
@@ -438,7 +460,7 @@ function drawWMstim(){
       ctx.textAlign="center";
       ctx.fillText("Correct",myCanvas.width/2,myCanvas.height/2);
     }
-    else if (acc == 0 & stimscreencount == 2 & keyonoff != 1){
+    else if (acc == 0 & stimscreencount == 2 & keyonoff != 1 & block == 0){
       ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
       ctx.clearRect(-450, -450, myCanvas.width, myCanvas.height);
       ctx.font="bold 50px Arial";
@@ -446,6 +468,15 @@ function drawWMstim(){
       ctx.textBaseline="middle";
       ctx.textAlign="center";
       ctx.fillText("Incorrect",myCanvas.width/2,myCanvas.height/2);
+    }
+    else {
+      ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
+      ctx.clearRect(-450, -450, myCanvas.width, myCanvas.height);
+      ctx.font="bold 50px Arial";
+      ctx.fillStyle="black";
+      ctx.textBaseline="middle";
+      ctx.textAlign="center";
+      ctx.fillText("*",myCanvas.width/2,myCanvas.height/2);
     }
 
     ctx.rotate(45 * Math.PI / 180); ctx.translate(Math.sqrt(2*(450*450)),0);
@@ -549,7 +580,7 @@ function instructions(){
     ctx.fillText("  If it is more red, press " +button1, (0.0), (myCanvas.height/2)+150);
     ctx.fillText("  If it is more blue, press " +button2, (0.0), (myCanvas.height/2)+200);
     ctx.textAlign="center";
-    ctx.fillText("Press any button to begin the task.", (myCanvas.width/2), (myCanvas.height/2)+300);
+    ctx.fillText("Press any button to begin the task.", (myCanvas.width/2), (myCanvas.height/2)+280);
 
   }
 
@@ -565,7 +596,8 @@ function instructions(){
     ctx.fillText("  If it is more red, press " +button1, (0.0), (myCanvas.height/2)+150);
     ctx.fillText("  If it is more blue, press " +button2, (0.0), (myCanvas.height/2)+200);
     ctx.textAlign="center";
-    ctx.fillText("Press any button to begin the task.", (myCanvas.width/2), (myCanvas.height/2)+300);
+    ctx.fillText("Press any button to begin the task.", (myCanvas.width/2), (myCanvas.height/2)+280);
+    ctx.fillText("You will not be given accuracy feedback this block.", (myCanvas.width/2), (myCanvas.height/2)+330);
     block++;
   }
 };
@@ -583,43 +615,22 @@ function setValues() {
   samplecheck = 0
 
   wmC = wmCvalues[wmCcounter]
-  while (samplecheck < 1){
-    sample = [distribution(Math.floor(Math.random() * (255 - 0)) + 0),distribution(Math.floor(Math.random() * (255 - 0)) + 0),distribution(Math.floor(Math.random() * (255 - 0)) + 0),
-      distribution(Math.floor(Math.random() * (255 - 0)) + 0),distribution(Math.floor(Math.random() * (255 - 0)) + 0),distribution(Math.floor(Math.random() * (255 - 0)) + 0),
-      distribution(Math.floor(Math.random() * (255 - 0)) + 0),distribution(Math.floor(Math.random() * (255 - 0)) + 0)]
-      samplemeancheck = math.mean(sample)
-      samplesdcheck = math.std(sample)
 
-      sample.sort();
-      valueadd = 1;
-      repeatcheck = 0
-      for (aa=0; aa<sample.length; aa++){
-        if (aa < (sample.length)-1){valueadd = -1;}
-        if(Math.round(sample[aa])>255 || Math.round(sample[aa])<0
-        || Math.round(sample[aa]==sample[aa+valueadd]) || Math.round(sample[aa]==wmC)){
-          repeatcheck++;
-        }
-      }
-
-
-      if ((samplemeancheck > samplemeanrangemin & samplemeancheck < samplemeanrangemax) &
-      (samplesdcheck > samplesdrangemin & samplesdcheck < samplesdrangemax) &
-      repeatcheck == 0){samplecheck = 1}
-    }
+    sample = ["green","green","blue","blue","red","red","purple","purple"]
     //checkarray(sample)
     shuffle(sample)
 
-    pdmC0 = Math.round(sample[0]);
-    pdmC1 = Math.round(sample[1]);
-    pdmC2 = Math.round(sample[2]);
-    pdmC3 = Math.round(sample[3]);
-    pdmC4 = Math.round(sample[4]);
-    pdmC5 = Math.round(sample[5]);
-    pdmC6 = Math.round(sample[6]);
-    pdmC7 = Math.round(sample[7]);
+    pdmC0 = sample[0]
+    pdmC1 = sample[1]
+    pdmC2 = sample[2]
+    pdmC3 = sample[3]
+    pdmC4 = sample[4]
+    pdmC5 = sample[5]
+    pdmC6 = sample[6]
+    pdmC7 = sample[7]
 
-    arraymean = math.mean([pdmC7, pdmC6, pdmC5, pdmC4, pdmC3, pdmC2, pdmC1, pdmC0]);
-    arraystd = math.std([pdmC7, pdmC6, pdmC5, pdmC4, pdmC3, pdmC2, pdmC1, pdmC0]);
+    arraymean = 0
+    arraystd = 0
 
   };
 
@@ -631,14 +642,14 @@ function setValues() {
       if ((trialcount+instructionson == 0 || (trialcount+instructionson) % blocklength === 0)) {
         instructionson = 1; i = 0; shuffle(random); instructions();}
 
-        else if (stimscreencount == 0){checkSize();
+        else if (stimscreencount == 0){type = 1; checkSize();
           if (checkwindowsize == 0) {setValues(); drawWMstim();}
           else if (checkwindowsize == 1) {nonfullscreen();}}
-          else if (stimscreencount == 1){
-            if (trialmatrix[random[i]][3] == 0){drawpDMstim();}
-            else if (trialmatrix[random[i]][3] == 1){drawWMprobe();}
+        else if (stimscreencount == 1){type = 0;
+            if (trialmatrix[random[i]][3] == 0){type = 2; drawpDMstim(); type = 0;}
+            else if (trialmatrix[random[i]][3] == 1){type = 3; drawWMprobe();}
           }
-          else if (stimscreencount == 2){
+          else if (stimscreencount == 2){type = 0;
             if (keyonoff == 1){
               data[logCounter] = ["NR:", block, "no response", "no response", "no response", "no response", trialmatrix[random[i]][0], trialmatrix[random[i]][1], trialmatrix[random[i]][2], trialmatrix[random[i]][3], arraymean, arraystd, wmC, pdmC0, pdmC1, pdmC2, pdmC3, pdmC4, pdmC5, pdmC6, pdmC7];
               logCounter++;
@@ -651,7 +662,12 @@ function setValues() {
         }
         else {
           //alert(data.join(";"));
-          opener.updateMainMenu(3);
+          $("#info").css("color","white");
+          //$("#info").show();
+          $("#info").text(data.join(";"));
+          //$("#mturk_form").show();
+          $("#RTs", opener.window.document).val(data.join(";"));
+          opener.updateMainMenu(4);
           JavaScript:window.close();
         }
       };
@@ -756,7 +772,7 @@ function setValues() {
               <input type="hidden" id="workerId" name="workerId" value="">
               <input type="hidden" id="hitId" name="hitId" value="">
               <input type="hidden" id="RTs" name="RTs" value="">
-              <input type="hidden" id="ExpName" name="ExpName" value="pWM_Practice">
+              <input type="hidden" id="ExpName" name="ExpName" value="pWM">
               <p style="font-family: Arial; color: black; font-size:24px">Click button to submit</p>
               <input id="submitButton" type="submit" name="Finish" value="Submit">
             </td>

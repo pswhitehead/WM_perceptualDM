@@ -118,27 +118,52 @@
 		}
 		else
 		{
-			updateMainMenu(0);
-			$("#myButton").click(function(){
-			switch(curStage)
-				{
-				case 0:
-					basicPopup("Demographics.html");
-					break;
-				case 1:
-					basicPopup("Instructions.html");
-					break;
-				case 2:
-					basicPopup("Task_Practice.html");
-					break;
-				case 3:
-					basicPopup("Task.html");
-					break;
-				}
-			});
-			$("#redo").click(function(){
-					basicPopup("Task_Practice.html");
-					});
+			if (document.getElementById('workerId').value % 2 === 0) {
+				updateMainMenu(0);
+				$("#myButton").click(function(){
+				switch(curStage)
+					{
+					case 0:
+						basicPopup("Demographics.html");
+						break;
+					case 1:
+						basicPopup("Instructions.html");
+						break;
+					case 2:
+						basicPopup("Task_Practice.html");
+						break;
+					case 3:
+						basicPopup("Task.html");
+						break;
+					}
+				});
+				$("#redo").click(function(){
+						basicPopup("Task_Practice.html");
+						});
+			}
+			else {
+				updateMainMenu(0);
+				$("#myButton").click(function(){
+				switch(curStage)
+					{
+					case 0:
+						basicPopup("Demographics.html");
+						break;
+					case 1:
+						basicPopup("Instructions2.html");
+						break;
+					case 2:
+						basicPopup("Task_Practice2.html");
+						break;
+					case 3:
+						basicPopup("Task2.html");
+						break;
+					}
+				});
+				$("#redo").click(function(){
+						basicPopup("Task_Practice2.html");
+						});
+			}
 		}
 	});
 
@@ -157,10 +182,10 @@
 							<input type="hidden" id="workerId" name="workerId" value="">
 							<input type="hidden" id="hitId" name="hitId" value="">
 							<input type="hidden" id="RTs" name="RTs" value="">
-							<input type="hidden" id="demographics" name="demographics" value="pWM">
-							<input type="hidden" id="ExpName" name="ExpName" value="pWM">
+							<input type="hidden" id="demographics" name="demographics" value="pWMinperson">
+							<input type="hidden" id="ExpName" name="ExpName" value="pWMinperson">
 							<p style="font-family: Arial; color: white; font-size:24px">Click button to submit</p>
-							<p style="font-family: Arial; color: white; font-size:12px">“Thank you for participating in this study aimed to understand different aspects of memory and attention. In this particular study, we were looking to see if you responded more quickly to words in the first task of every block that were not overlapping in response dimensions with the prospective task. A congruent item in the first task of each block was when the correct response button was compatible with the correct response button for the prospective task, an incongruent item was when they were not compatible. There was not such a dichotomy in the prospective task of each block. Thus your responses are invaluable for us because we are looking to see how overlapping stimulus dimensions versus stimulus-response associations in both the first and prospective task were differentially impacted. At this time we haven’t been able to make any formal conclusions as we are just collecting data and haven’t analyzed the data yet! But, if you want to know more, feel free to contact me at any time at psw13@duke.edu or tobias.egner@duke.edu. Again, thanks so much for your participation!”</p>
+							<p style="font-family: Arial; color: white; font-size:12px">“Thank you for participating in this study aimed to understand different aspects of memory and attention.”</p>
 							<input id="submitButton" type="submit" name="Finish" value="Submit">
 							</form>
 				</td>

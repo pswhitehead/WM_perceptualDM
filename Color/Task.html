@@ -167,7 +167,7 @@
       var xcoordinate7 = r * Math.cos((Math.PI / 180) * (315+offset));
 
       //mean color parameters for trials
-      var mcref = (256/2);
+      var mcref = (255/2);
       var mccategory = 255;
       var mccondition = 1;
       var mcscaling = .0666;
@@ -191,7 +191,7 @@
       var sdcscaling = .0666;
 
       function sdcolor(conditionaddsd){
-        standarddeviationcolor = ((3.25+conditionaddsd)*(sdccondition)) * sdcscaling;
+        standarddeviationcolor = ((4+conditionaddsd)*(sdccondition)) * sdcscaling;
       };
 
       //standard deviation shape parameters
@@ -335,14 +335,14 @@ function drawWMstim(){
 
     if (acc == 1 & stimscreencount == 2){
       ctx.font="bold 50px Arial";
-      ctx.fillStyle="black";
+      ctx.fillStyle="white";
       ctx.textBaseline="middle";
       ctx.textAlign="center";
       ctx.fillText("Correct",myCanvas.width/2,(myCanvas.height/2)-225);
     }
     else if (acc == 0 & stimscreencount == 2){
       ctx.font="bold 50px Arial";
-      ctx.fillStyle="black";
+      ctx.fillStyle="white";
       ctx.textBaseline="middle";
       ctx.textAlign="center";
       ctx.fillText("Incorrect",myCanvas.width/2,(myCanvas.height/2)-225);
@@ -384,7 +384,7 @@ function drawWMstim(){
     if (time > 0)
     {
       $("#startButton").hide();
-      ctx.fillStyle = "black";
+      ctx.fillStyle = "white";
       ctx.font="60px Arial";
       ctx.clearRect(-450, -450, myCanvas.width, myCanvas.height);
       ctx.fillText(""+time, 0, 0);
@@ -405,7 +405,7 @@ function drawWMstim(){
     ctx.rotate((-45) * Math.PI / 180);
     ctx.translate(-450,-450);
     ctx.font="bold 50px Arial";
-    ctx.fillStyle="black";
+    ctx.fillStyle="white";
     ctx.textBaseline="middle";
     ctx.textAlign="center";
     ctx.fillText("*",myCanvas.width/2,(myCanvas.height/2)+9);
@@ -413,7 +413,7 @@ function drawWMstim(){
       ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
       ctx.clearRect(-450, -450, myCanvas.width, myCanvas.height);
       ctx.font="bold 50px Arial";
-      ctx.fillStyle="black";
+      ctx.fillStyle="white";
       ctx.textBaseline="middle";
       ctx.textAlign="center";
       acctotalcount++; stimscreencount=2;
@@ -423,7 +423,7 @@ function drawWMstim(){
       ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
       ctx.clearRect(-450, -450, myCanvas.width, myCanvas.height);
       ctx.font="bold 50px Arial";
-      ctx.fillStyle="black";
+      ctx.fillStyle="white";
       ctx.textBaseline="middle";
       ctx.textAlign="center";
       ctx.fillText("Correct",myCanvas.width/2,myCanvas.height/2);
@@ -432,7 +432,7 @@ function drawWMstim(){
       ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
       ctx.clearRect(-450, -450, myCanvas.width, myCanvas.height);
       ctx.font="bold 50px Arial";
-      ctx.fillStyle="black";
+      ctx.fillStyle="white";
       ctx.textBaseline="middle";
       ctx.textAlign="center";
       ctx.fillText("Incorrect",myCanvas.width/2,myCanvas.height/2);
@@ -441,7 +441,7 @@ function drawWMstim(){
       ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
       ctx.clearRect(-450, -450, myCanvas.width, myCanvas.height);
       ctx.font="bold 50px Arial";
-      ctx.fillStyle="black";
+      ctx.fillStyle="white";
       ctx.textBaseline="middle";
       ctx.textAlign="center";
       ctx.fillText("*",myCanvas.width/2,myCanvas.height/2);
@@ -459,7 +459,7 @@ function drawWMstim(){
     ctx.rotate((-45) * Math.PI / 180);
     ctx.translate(-450,-450);
     ctx.font="bold 50px Arial";
-    ctx.fillStyle="black";
+    ctx.fillStyle="white";
     ctx.textBaseline="middle";
     ctx.textAlign="center";
     ctx.fillText("Wrong response option. Try again.",myCanvas.width/2,myCanvas.height/2);
@@ -473,7 +473,7 @@ function drawWMstim(){
     ctx.rotate((-45) * Math.PI / 180);
     ctx.translate(-450,-450);
     ctx.font="bold 30px Arial";
-    ctx.fillStyle="black";
+    ctx.fillStyle="white";
     ctx.textBaseline="middle";
     ctx.textAlign="center";
     if (notfullscreen == 0){
@@ -533,7 +533,7 @@ function instructions(){
   ctx.rotate((-45) * Math.PI / 180);
   ctx.translate(-450,-450);
   ctx.font="25px Arial";
-  ctx.fillStyle="black";
+  ctx.fillStyle="white";
   ctx.textBaseline="middle";
   ctx.textAlign="center";
 
@@ -762,7 +762,7 @@ function setValues() {
               <input type="hidden" id="hitId" name="hitId" value="">
               <input type="hidden" id="RTs" name="RTs" value="">
               <input type="hidden" id="ExpName" name="ExpName" value="pWM">
-              <p style="font-family: Arial; color: black; font-size:24px">Click button to submit</p>
+              <p style="font-family: Arial; color: white; font-size:24px">Click button to submit</p>
               <input id="submitButton" type="submit" name="Finish" value="Submit">
             </td>
           </tr>
