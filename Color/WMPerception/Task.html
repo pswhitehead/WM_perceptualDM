@@ -13,8 +13,8 @@
     var c = document.getElementById("myCanvas");
     var ctx = c.getContext("2d");
     document.getElementById("myCanvas").style.cursor = "none";
-    ctx.rotate(45 * Math.PI / 180);
-    ctx.translate(Math.sqrt(2*(350*350)),0);
+    //ctx.rotate(45 * Math.PI / 180);
+    //ctx.translate(Math.sqrt(2*(350*350)),0);
 
     //Experiment Parameters
     //setup for experiment
@@ -22,7 +22,7 @@
     var trialcount = 0;
     var totalcount = 0;
     var instructioncount = 0;
-    var stimscreencount = 0;
+     stimscreencount = 0;
     var area = 6000;//12000;
     var WMinterval = 500;
     var preWMstimbuffer = 500
@@ -41,6 +41,8 @@
     notfullscreen = 0;
     drawcorrectanswercounter = 0;
     keyonoff = 0;
+    keynumber = 0;
+
 
     //response button shuffle
     var responsebutton = [0,1];
@@ -191,7 +193,7 @@
       var sdcscaling = .0666;
 
       function sdcolor(conditionaddsd){
-        standarddeviationcolor = ((4+conditionaddsd)*(sdccondition)) * sdcscaling;
+        standarddeviationcolor = ((3+conditionaddsd)*(sdccondition)) * sdcscaling;
       };
 
       //standard deviation shape parameters
@@ -264,10 +266,16 @@
 function drawWMstim(){
   type = 1;
   $("#startButton").hide();
-  ctx.clearRect(-350, -350, myCanvas.width, myCanvas.height);
-  function clearstimscreen(){ctx.clearRect(-350, -350, myCanvas.width, myCanvas.height); timeout = setTimeout(drawWMstimscreen,preWMstimbuffer);}
-  function drawWMstimscreen(){drawsquircle(wmC, 0,0, 2);
-    stimscreencount++; ITIinterval = 1500;
+  function clearstimscreen(){ctx.clearRect(0, 0, myCanvas.width, myCanvas.height); timeout = setTimeout(drawWMstimscreen,preWMstimbuffer);}
+  function drawWMstimscreen(){
+    ctx.save(); //saves the state of canvas
+    ctx.rotate(45 * Math.PI / 180);
+    ctx.translate(Math.sqrt(2*(350*350)),0);
+    ctx.clearRect(-350, -350, myCanvas.width, myCanvas.height);
+    drawsquircle(wmC, 0,0, 2);
+    ctx.restore();
+
+    stimscreencount=1; ITIinterval = 1500;
     timeout = setTimeout(showITI,WMinterval);}
     clearstimscreen();
   };
@@ -279,9 +287,13 @@ function drawWMstim(){
     type = 2;
     timoutonoff = 0;
     keyonoff = 1;
+    stimscreencount=2;
     $("#startButton").hide();
+    ctx.save(); //saves the state of canvas
+    ctx.rotate(45 * Math.PI / 180);
+    ctx.translate(Math.sqrt(2*(350*350)),0);
     ctx.clearRect(-350, -350, myCanvas.width, myCanvas.height);
-    function clearstimscreen(){ if (type = 2){ctx.clearRect(-350, -350, myCanvas.width, myCanvas.height);}}
+    function clearstimscreen2(){ if (type = 2){ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);}}
     function drawstimscreenDM(){
       timoutonoff = 1;
       drawsquircle(pdmC0, xcoordinate,ycoordinate, 2)
@@ -292,11 +304,12 @@ function drawWMstim(){
       drawsquircle(pdmC5, xcoordinate5,ycoordinate5, 2)
       drawsquircle(pdmC6, xcoordinate6,ycoordinate6, 2)
       drawsquircle(pdmC7, xcoordinate7,ycoordinate7, 2)
-      timeoutDMstim = setTimeout(clearstimscreen, coloraveragingpresentationtime);
+      timeoutDMstim = setTimeout(clearstimscreen2, coloraveragingpresentationtime);
     };
     drawstimscreenDM()
     ITIinterval = 1000;
     timeoutDMstim = setTimeout(showITI, decisionmakingtimeout);
+    ctx.restore();
   };
 
   //Draw WM probe screens
@@ -306,9 +319,9 @@ function drawWMstim(){
     type = 5;
     drawcorrectanswercounter = 0;
     document.getElementById("myCanvas").style.cursor = "pointer";
-    ctx.clearRect(-350, -350, myCanvas.width, myCanvas.height);
-    ctx.rotate((-45) * Math.PI / 180);
-    ctx.translate(-350,-350);
+    //ctx.clearRect(-350, -350, myCanvas.width, myCanvas.height);
+    //ctx.rotate((-45) * Math.PI / 180);
+    //ctx.translate(-350,-350);
     linewidth = 2;
     offset_probe = 94;
     for (var y = linewidth/2, color = 255; y < 512; y += linewidth, color -= 1) {
@@ -372,27 +385,29 @@ function drawWMstim(){
     ctx.globalAlpha = 0.65
     ctx.fill();
     document.getElementById("myCanvas").style.cursor = "none";
-    ctx.rotate(45 * Math.PI / 180); ctx.translate(Math.sqrt(2*(350*350)),0); ctx.globalAlpha = 1;
+    //ctx.rotate(45 * Math.PI / 180); ctx.translate(Math.sqrt(2*(350*350)),0);
+    ctx.globalAlpha = 1;
     timeoutWMprobe = setTimeout(runTrial,1000);
   }
 
   //Countdown, Shuffle, and ITI screens/functions
   function countDown(time)
   {
-    if (time == 3 | time == 5){ctx.rotate((-45) * Math.PI / 180);}
+    //if (time == 3 | time == 5){ctx.rotate((-45) * Math.PI / 180);}
     type = 3;
     if (time > 0)
     {
       $("#startButton").hide();
       ctx.fillStyle = "white";
       ctx.font="60px Arial";
-      ctx.clearRect(-350, -350, myCanvas.width, myCanvas.height);
-      ctx.fillText(""+time, 0, 0);
+    //  ctx.clearRect(-350, -350, myCanvas.width, myCanvas.height);
+      ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
+      ctx.fillText(""+time, myCanvas.width/2, myCanvas.height/2);
       timeoutcountdown = setTimeout(function(){countDown(time-1)},1000);
     }
     else
     {
-      ctx.rotate((45) * Math.PI / 180);
+      //ctx.rotate((45) * Math.PI / 180);
       runTrial();
     }
   };
@@ -401,9 +416,9 @@ function drawWMstim(){
     type = 4;
     $("#startButton").hide();
     ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
-    ctx.clearRect(-350, -350, myCanvas.width, myCanvas.height);
-    ctx.rotate((-45) * Math.PI / 180);
-    ctx.translate(-350,-350);
+    //ctx.clearRect(-350, -350, myCanvas.width, myCanvas.height);
+    //ctx.rotate((-45) * Math.PI / 180);
+    //ctx.translate(-350,-350);
     ctx.font="bold 50px Arial";
     ctx.fillStyle="white";
     ctx.textBaseline="middle";
@@ -411,7 +426,7 @@ function drawWMstim(){
     ctx.fillText("*",myCanvas.width/2,(myCanvas.height/2)+7);
     if(keyonoff == 1){
       ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
-      ctx.clearRect(-350, -350, myCanvas.width, myCanvas.height);
+      //ctx.clearRect(-350, -350, myCanvas.width, myCanvas.height);
       ctx.font="bold 50px Arial";
       ctx.fillStyle="white";
       ctx.textBaseline="middle";
@@ -421,7 +436,7 @@ function drawWMstim(){
     }
     else if (acc == 1 & stimscreencount == 2 & keyonoff != 1 & block == 0){
       ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
-      ctx.clearRect(-350, -350, myCanvas.width, myCanvas.height);
+      //ctx.clearRect(-350, -350, myCanvas.width, myCanvas.height);
       ctx.font="bold 50px Arial";
       ctx.fillStyle="white";
       ctx.textBaseline="middle";
@@ -430,14 +445,14 @@ function drawWMstim(){
     }
     else if (acc == 0 & stimscreencount == 2 & keyonoff != 1 & block == 0){
       ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
-      ctx.clearRect(-350, -350, myCanvas.width, myCanvas.height);
+      //ctx.clearRect(-350, -350, myCanvas.width, myCanvas.height);
       ctx.font="bold 50px Arial";
       ctx.fillStyle="white";
       ctx.textBaseline="middle";
       ctx.textAlign="center";
       ctx.fillText("Incorrect",myCanvas.width/2,myCanvas.height/2);
     }
-    else {
+    /*else {
       ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
       ctx.clearRect(-350, -350, myCanvas.width, myCanvas.height);
       ctx.font="bold 50px Arial";
@@ -445,9 +460,9 @@ function drawWMstim(){
       ctx.textBaseline="middle";
       ctx.textAlign="center";
       ctx.fillText("*",myCanvas.width/2,myCanvas.height/2);
-    }
+    }*/
 
-    ctx.rotate(45 * Math.PI / 180); ctx.translate(Math.sqrt(2*(350*350)),0);
+    //ctx.rotate(45 * Math.PI / 180); ctx.translate(Math.sqrt(2*(350*350)),0);
     //keyonoff = 0;
     timeoutITI = setTimeout(runTrial,ITIinterval);
   };
@@ -455,23 +470,23 @@ function drawWMstim(){
   function wrongbuttonpress(){
     type = 2;
     ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
-    ctx.clearRect(-350, -350, myCanvas.width, myCanvas.height);
-    ctx.rotate((-45) * Math.PI / 180);
-    ctx.translate(-350,-350);
+    //ctx.clearRect(-350, -350, myCanvas.width, myCanvas.height);
+    //ctx.rotate((-45) * Math.PI / 180);
+    //ctx.translate(-350,-350);
     ctx.font="bold 50px Arial";
     ctx.fillStyle="white";
     ctx.textBaseline="middle";
     ctx.textAlign="center";
     ctx.fillText("Wrong response option. Try again.",myCanvas.width/2,myCanvas.height/2);
-    ctx.rotate(45 * Math.PI / 180); ctx.translate(Math.sqrt(2*(350*350)),0);
+    //ctx.rotate(45 * Math.PI / 180); ctx.translate(Math.sqrt(2*(350*350)),0);
   }
 
   function nonfullscreen(){
     type = 7;
     ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
-    ctx.clearRect(-350, -350, myCanvas.width, myCanvas.height);
-    ctx.rotate((-45) * Math.PI / 180);
-    ctx.translate(-350,-350);
+    //ctx.clearRect(-350, -350, myCanvas.width, myCanvas.height);
+    //ctx.rotate((-45) * Math.PI / 180);
+    //ctx.translate(-350,-350);
     ctx.font="bold 30px Arial";
     ctx.fillStyle="white";
     ctx.textBaseline="middle";
@@ -487,7 +502,7 @@ function drawWMstim(){
     else {ctx.fillText("Please refresh the page to restart the experiment.",myCanvas.width/2,myCanvas.height/2);
     notfullscreen++;
   }
-  ctx.rotate(45 * Math.PI / 180); ctx.translate(Math.sqrt(2*(350*350)),0);
+  c//tx.rotate(45 * Math.PI / 180); ctx.translate(Math.sqrt(2*(350*350)),0);
 }
 
 function checkSize()
@@ -529,9 +544,9 @@ function instructions(){
   document.getElementById("myCanvas").style.cursor = "pointer";
   $("#startButton").hide();
   ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
-  ctx.clearRect(-350, -350, myCanvas.width, myCanvas.height);
-  ctx.rotate((-45) * Math.PI / 180);
-  ctx.translate(-350,-350);
+  //ctx.clearRect(-350, -350, myCanvas.width, myCanvas.height);
+  //ctx.rotate((-45) * Math.PI / 180);
+  //ctx.translate(-350,-350);
   ctx.font="20px Arial";
   ctx.fillStyle="white";
   ctx.textBaseline="middle";
@@ -635,7 +650,7 @@ function setValues() {
           if (checkwindowsize == 0) {setValues(); drawWMstim();}
           else if (checkwindowsize == 1) {nonfullscreen();}}
         else if (stimscreencount == 1){type = 0;
-            if (trialmatrix[random[i]][3] == 0){type = 2; drawpDMstim(); type = 0;}
+            if (trialmatrix[random[i]][3] == 0){type = 2; drawpDMstim();}
             else if (trialmatrix[random[i]][3] == 1){type = 3; drawWMprobe();}
           }
           else if (stimscreencount == 2){type = 0;
@@ -664,16 +679,16 @@ function setValues() {
 
       //Detect events likes clicks or button presses
       $("body").keypress(function(event){
-        //clearTimeout();
-        if (type == 2) {key = String.fromCharCode(event.which);};
         //creates more data
-        d1 = new Date();
-        Ronset = d1.getTime()-runStart;
-        respTime = Ronset-onset;
-        acc = 0;
-        if (type == 0) {jokes++;}
-        else if (type == 1) {clearTimeout(timeout); timeout = setTimeout(showITI,WMinterval);}
+        if (type == 0) {event.preventDefault(); }
+        else if (type == 1) {event.preventDefault(); }
         else if (type == 2) {
+          key = String.fromCharCode(event.which);
+          type = 0;
+          d1 = new Date();
+          Ronset = d1.getTime()-runStart;
+          respTime = Ronset-onset;
+          acc = 0;
           keyonoff = 0;
           if (responsebutton[0] == 0){
             if (trialmatrix[random[i]][0] == -1){
@@ -694,14 +709,14 @@ function setValues() {
 
           if(key == "s" || key == "S" || key == "a" || key == "A"){
             data[logCounter] = ["NR:", block, Ronset, key, keynumber, respTime, acc, trialmatrix[random[i]][0], trialmatrix[random[i]][1], trialmatrix[random[i]][2], trialmatrix[random[i]][3], arraymean, arraystd, wmC, pdmC0, pdmC1, pdmC2, pdmC3, pdmC4, pdmC5, pdmC6, pdmC7];
-            logCounter++; acctotalcount++; stimscreencount++; clearTimeout(timeoutDMstim); showITI();
+            logCounter++; acctotalcount++; clearTimeout(timeoutDMstim); showITI();
           }
-          else {wrongbuttonpress()}
+          else {wrongbuttonpress();}
         }
-        else if (type == 3) {jokes++;}
+        else if (type == 3) {event.preventDefault();}
         else if (type == 4) {clearTimeout(timeoutITI); showITI();}
-        else if (type == 5) {jokes++;}
-        else if (type == 6) {ctx.rotate(45 * Math.PI / 180); ctx.translate(Math.sqrt(2*(350*350)),0); instructioncount++; document.getElementById("myCanvas").style.cursor = "none"; countDown(3);}
+        else if (type == 5) {event.preventDefault(); }
+        else if (type == 6) {/*ctx.rotate(45 * Math.PI / 180); ctx.translate(Math.sqrt(2*(350*350)),0);*/ instructioncount++; document.getElementById("myCanvas").style.cursor = "none"; countDown(3);}
         else if (type == 7) {checkSize(); if (checkwindowsize == 0 && notfullscreen == 1) {countDown(3);} else {jokes++;}}
       });
 
